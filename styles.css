@@ -488,65 +488,139 @@ img { display: block; max-width: 100%; }
 .stat-label { font-size: 0.875rem; color: var(--text-secondary); }
 
 .hero-right { position: relative; z-index: 1; display: flex; justify-content: center; }
-.portrait-wrapper {
+
+/* ── ENHANCED TECH PORTRAIT ── */
+.portrait-tech-wrapper {
   width: 100%;
   max-width: 380px;
   aspect-ratio: 4/5;
   margin: 0 auto;
-  border-radius: 2rem;
-  overflow: hidden;
   position: relative;
-  box-shadow: 0 0 60px rgba(147,51,234,0.2);
-  transition: transform 0.2s ease-out;
+  padding: 1rem; /* Space for the outer hardware bracket */
+  background: rgba(147, 51, 234, 0.03);
+  border: 1px solid rgba(147, 51, 234, 0.15);
+  box-shadow: 0 0 40px rgba(147, 51, 234, 0.1);
+  transition: transform 0.2s ease-out, box-shadow 0.4s var(--ease-cinematic);
 }
-@media (min-width: 1024px) { .portrait-wrapper { margin-left: auto; } }
-.portrait-placeholder {
+@media (min-width: 1024px) { .portrait-tech-wrapper { margin-left: auto; } }
+
+.portrait-tech-wrapper:hover {
+  box-shadow: 0 0 60px rgba(147, 51, 234, 0.25), inset 0 0 20px rgba(0, 229, 255, 0.1);
+}
+
+.portrait-image-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-card);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 4px; /* Sharper corners for tech feel */
+}
+
+/* Image effects: Greyscale, dim, and zoomed out to start */
+.portrait-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(1) contrast(1.1) brightness(0.85);
+  transform: scale(1.05);
+  transition: filter 0.8s var(--ease-cinematic), transform 0.8s var(--ease-cinematic);
+  position: relative; 
+  z-index: 1;
+}
+/* Focus effect on hover */
+.portrait-tech-wrapper:hover .portrait-img {
+  filter: grayscale(0) contrast(1) brightness(1);
+  transform: scale(1);
+}
+
+/* Tactical HUD Grid over the image */
+.hud-overlay {
   position: absolute;
   inset: 0;
-  background: var(--bg-card);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 2.5rem;
-  color: var(--text-muted);
-  z-index: 0;
+  background-image:
+    linear-gradient(to right, rgba(0, 229, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 229, 255, 0.06) 1px, transparent 1px);
+  background-size: 30px 30px;
+  pointer-events: none;
+  z-index: 2;
+  transition: opacity 0.4s ease;
 }
-.portrait-img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  filter: grayscale(1);
-  transition: filter 0.7s ease;
-  position: relative; z-index: 1;
-}
-.portrait-wrapper:hover .portrait-img { filter: grayscale(0); }
+
+/* Sharp Laser Scan Line */
 .portrait-scanner {
   position: absolute;
-  top: -100%; left: 0;
-  width: 100%; height: 2rem;
-  background: linear-gradient(to bottom, transparent, rgba(147,51,234,0.3), transparent);
-  mix-blend-mode: overlay;
-  opacity: 0.5;
-  z-index: 2;
-  animation: scan 4s ease-in-out infinite;
-}
-.portrait-wrapper:hover .portrait-scanner { opacity: 1; }
-.portrait-border {
-  position: absolute;
-  inset: 0;
-  border: 2px solid rgba(255,255,255,0.1);
-  border-radius: 2rem;
+  top: -10%; left: 0;
+  width: 100%; height: 2px;
+  background: var(--accent-cyan);
+  box-shadow: 0 0 20px 5px rgba(0, 229, 255, 0.3);
   z-index: 3;
-  transition: border-color 0.5s;
+  opacity: 0.7;
   pointer-events: none;
+  animation: tech-scan 4s ease-in-out infinite;
 }
-.portrait-wrapper:hover .portrait-border { border-color: rgba(147,51,234,0.5); }
+@keyframes tech-scan {
+  0%   { top: -10%; }
+  50%  { top: 110%; }
+  100% { top: -10%; }
+}
 
-@keyframes scan {
-  0%   { top: -100%; }
-  50%  { top: 500%; }
-  100% { top: -100%; }
+/* Facial Tracking Crosshair */
+.crosshair {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px; height: 60px;
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  border-radius: 50%;
+  z-index: 2;
+  pointer-events: none;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.8s var(--ease-cinematic), border-color 0.4s;
 }
+.portrait-tech-wrapper:hover .crosshair {
+  transform: translate(-50%, -50%) scale(0.8) rotate(45deg);
+  border-color: rgba(0, 229, 255, 0.6);
+}
+.crosshair::before, .crosshair::after {
+  content: '';
+  position: absolute;
+  background: rgba(0, 229, 255, 0.4);
+}
+.crosshair::before { width: 100%; height: 1px; }
+.crosshair::after { width: 1px; height: 100%; }
+
+/* Outer Hardware Mecha-Corners */
+.tech-corner {
+  position: absolute;
+  width: 25px; height: 25px;
+  border-color: var(--accent);
+  border-style: solid;
+  pointer-events: none;
+  transition: border-color 0.4s;
+}
+.portrait-tech-wrapper:hover .tech-corner { border-color: var(--accent-cyan); }
+.tech-corner.tl { top: -2px; left: -2px; border-width: 2px 0 0 2px; }
+.tech-corner.tr { top: -2px; right: -2px; border-width: 2px 2px 0 0; }
+.tech-corner.bl { bottom: -2px; left: -2px; border-width: 0 0 2px 2px; }
+.tech-corner.br { bottom: -2px; right: -2px; border-width: 0 2px 2px 0; }
+
+/* Floating Terminal Labels */
+.tech-label {
+  position: absolute;
+  background: var(--bg-card);
+  border: 1px solid var(--accent);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  padding: 3px 10px;
+  z-index: 4;
+  letter-spacing: 0.1em;
+}
+.tech-label.top-left { top: -12px; left: 20px; }
+.tech-label.bottom-right { bottom: -12px; right: 20px; }
+.blink-text { animation: blink 1.2s step-end infinite; }
 
 /* ── DATA BUS DIVIDERS ── */
 .section-divider {
@@ -1512,6 +1586,15 @@ img { display: block; max-width: 100%; }
 [data-theme="light"] .gd-hover-overlay span { background: var(--accent); color: #fff; box-shadow: 0 4px 15px rgba(126,34,206,0.3); }
 
 [data-theme="light"] .footer-links a:hover, [data-theme="light"] .footer-links span:hover { color: var(--accent); }
+
+/* Light Theme: Tech Portrait Overrides */
+[data-theme="light"] .portrait-tech-wrapper { background: rgba(126, 34, 206, 0.03); border-color: rgba(126, 34, 206, 0.2); box-shadow: 0 10px 40px rgba(126, 34, 206, 0.05); }
+[data-theme="light"] .portrait-tech-wrapper:hover { box-shadow: 0 20px 40px rgba(126, 34, 206, 0.15); }
+[data-theme="light"] .portrait-image-container { border-color: rgba(126, 34, 206, 0.15); }
+[data-theme="light"] .tech-label { background: #fff; border-color: var(--accent); color: var(--text-primary); }
+[data-theme="light"] .crosshair { border-color: rgba(2, 132, 199, 0.3); }
+[data-theme="light"] .crosshair::before, [data-theme="light"] .crosshair::after { background: rgba(2, 132, 199, 0.5); }
+[data-theme="light"] .portrait-scanner { background: #0284c7; box-shadow: 0 0 20px 5px rgba(2, 132, 199, 0.2); }
 
 /* ── SHARED PROJECT PAGE STYLES ── */
 .project-page {
