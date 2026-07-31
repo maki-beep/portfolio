@@ -38,6 +38,7 @@
     <a href="index.html#home" class="mobile-link">Home</a>
     <a href="index.html#about" class="mobile-link">About</a>
     <a href="index.html#projects" class="mobile-link">Projects</a>
+    <a href="index.html#gallery" class="mobile-link">Gallery</a>
     <a href="index.html#contact" class="mobile-link">Contact</a>
   </div>
 
@@ -45,7 +46,28 @@
     <section class="project-header reveal">
       <div class="container">
         <a href="index.html#projects" class="back-btn magnetic" data-cursor="BACK"><i class='bx bx-arrow-back'></i> Back to Directory</a>
-        <h1 class="project-title">[Project Title]</h1>
+        <!-- Interactive Figma Edit Box -->
+        <div class="figma-edit-box reveal">
+          <div class="f-anchor tl"></div><div class="f-anchor tr"></div><div class="f-anchor bl"></div><div class="f-anchor br"></div>
+          
+          <div class="f-label-top">
+            <div class="f-tag">h1 / Graphic Design</div>
+            <div class="f-user">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="#000" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/></svg>You
+            </div>
+          </div>
+
+          <div class="f-label-bottom">
+            <div class="f-cursor-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--purple-300)" stroke="var(--purple-300)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transform: rotate(-15deg);"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/></svg>
+            </div>
+            <div class="f-status">editing...</div>
+          </div>
+
+          <h1 class="project-title" style="margin-bottom: 0;">
+            <span id="gd-project-title"></span><span class="cursor-blink"></span>
+          </h1>
+        </div>
         <div class="project-meta">
           <div class="meta-item"><span>Client</span> GDG On Campus</div>
           <div class="meta-item"><span>Role</span> Graphic Designer</div>

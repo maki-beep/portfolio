@@ -12,7 +12,13 @@ const PREFERS_REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduc
 ══════════════════════════════════════ */
 (function Preloader() {
   const el = document.getElementById('preloader');
-  if (!el) return;
+  
+  // FIX: If there is no preloader on this page (like project subpages), 
+  // skip the loader and start the typing animations immediately!
+  if (!el) {
+    setTimeout(triggerHeroAnimations, 100);
+    return;
+  }
 
   const panel   = document.getElementById('loader-panel');
   const logoEl  = document.getElementById('preloader-logo');
@@ -101,42 +107,52 @@ const PREFERS_REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduc
    2. HERO ANIMATIONS (Figma Typing Engine)
 ══════════════════════════════════════ */
 function triggerHeroAnimations() {
+  // Grab whichever title exists on the current page
   const titleEl = document.getElementById('hero-title-type');
-  
-  // The title text. We use <br> to drop "Pineda" to the next line and add the highlight.
-  const full = "Mikael Santino <br/><span class='f-highlight'>Pineda.</span>";
+  const gdTitleEl = document.getElementById('gd-project-title');
+  const sysTitleEl = document.getElementById('sys-project-title');
 
   if (PREFERS_REDUCED_MOTION) {
     document.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'));
-    if (titleEl) titleEl.innerHTML = full;
+    if (titleEl) titleEl.innerHTML = "Mikael Santino <br/><span class='f-highlight'>Pineda.</span>";
+    if (gdTitleEl) gdTitleEl.innerHTML = "GDG Chapter <span class='f-highlight'>Identity</span>";
+    if (sysTitleEl) sysTitleEl.innerHTML = "puptask <span class='f-highlight'>System</span>";
     return;
   }
 
-  // Trigger standard reveals
+  // Trigger standard scroll reveals that are visible on load
   document.querySelectorAll('.reveal').forEach((el, i) => {
     setTimeout(() => el.classList.add('visible'), 50 + i * 150);
   });
 
-  let idx = 0;
-  let isTag = false;
-
-  function typeHTML() {
-    if (!titleEl) return;
+  // Reusable function to handle typing logic
+  function typeTarget(el, fullText, speed = 50) {
+    if (!el) return; // If the element isn't on this page, do nothing
     
-    const char = full.charAt(idx);
-    if (char === '<') isTag = true;
-    if (char === '>') isTag = false;
+    let idx = 0;
+    let isTag = false;
     
-    idx++;
-    titleEl.innerHTML = full.slice(0, idx);
-    
-    if (idx < full.length) {
-      // Slower typing speed (50ms) so the massive title animation feels deliberate
-      setTimeout(typeHTML, isTag ? 0 : 50);
+    function type() {
+      const char = fullText.charAt(idx);
+      if (char === '<') isTag = true;
+      if (char === '>') isTag = false;
+      
+      idx++;
+      el.innerHTML = fullText.slice(0, idx);
+      
+      if (idx < fullText.length) {
+        setTimeout(type, isTag ? 0 : speed);
+      }
     }
+    
+    // Wait for the blur/slide-up reveal to finish before starting to type
+    setTimeout(type, 400);
   }
-  
-  setTimeout(typeHTML, 400);
+
+  // Execute typing for whichever element is actually on the page
+  typeTarget(titleEl, "Mikael Santino <br/><span class='f-highlight'>Pineda.</span>", 50);
+  typeTarget(gdTitleEl, "GDG Chapter <span class='f-highlight'>Identity</span>", 50);
+  typeTarget(sysTitleEl, "puptask <span class='f-highlight'>System</span>", 50);
 }
 
 
@@ -502,6 +518,7 @@ function triggerHeroAnimations() {
     revealEls.forEach(el => el.classList.add('visible'));
     typeHTML('about-title-type', "About <span class='f-highlight'>System</span>");
     typeHTML('project-title-type', "Project <span class='f-highlight'>Directory</span>");
+    typeHTML('gallery-title-type', "Visual <span class='f-highlight'>Gallery</span>");
     return;
   }
 
@@ -518,6 +535,9 @@ function triggerHeroAnimations() {
         }
         if (entry.target.querySelector('#project-title-type')) {
           typeHTML('project-title-type', "Project <span class='f-highlight'>Directory</span>", 50);
+        }
+        if (entry.target.querySelector('#gallery-title-type')) {
+          typeHTML('gallery-title-type', "Visual <span class='f-highlight'>Gallery</span>", 50);
         }
       }
     });
@@ -777,4 +797,114 @@ function triggerHeroAnimations() {
     const newTheme = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
     setTheme(newTheme);
   });
+})();
+
+/* ══════════════════════════════════════
+   18. 2D DRAGGABLE GALLERY (Smooth Momentum Physics)
+══════════════════════════════════════ */
+(function DraggableGallery2D() {
+  const slider = document.getElementById('gallery-viewport');
+  if (!slider) return;
+
+  let isDown = false;
+  let startX, startY;
+  let startScrollLeft, startScrollTop;
+  
+  // Physics variables
+  let targetX = slider.scrollLeft;
+  let targetY = slider.scrollTop;
+  let currentX = slider.scrollLeft;
+  let currentY = slider.scrollTop;
+  let isAnimating = false;
+
+  slider.addEventListener('mousedown', (e) => {
+    if (e.target.closest('a, button')) return; 
+    
+    isDown = true;
+    slider.classList.add('active');
+    
+    startX = e.pageX - slider.offsetLeft;
+    startY = e.pageY - slider.offsetTop;
+    
+    startScrollLeft = targetX;
+    startScrollTop = targetY;
+
+    const ring = document.getElementById('cursor-ring');
+    const lbl = document.getElementById('cursor-label');
+    if (ring && lbl) {
+      ring.classList.add('dragging');
+      lbl.textContent = 'DRAG';
+    }
+  });
+
+  slider.addEventListener('mouseleave', () => {
+    isDown = false;
+    slider.classList.remove('active');
+    resetCursor();
+  });
+
+  slider.addEventListener('mouseup', () => {
+    isDown = false;
+    slider.classList.remove('active');
+    resetCursor();
+  });
+
+  function resetCursor() {
+    const ring = document.getElementById('cursor-ring');
+    const lbl = document.getElementById('cursor-label');
+    if (ring && lbl && ring.classList.contains('dragging')) {
+      ring.classList.remove('dragging');
+      lbl.textContent = '';
+    }
+  }
+
+  slider.addEventListener('mousemove', (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    
+    const x = e.pageX - slider.offsetLeft;
+    const y = e.pageY - slider.offsetTop;
+    
+    // Multiplier controls how fast it drags (1.5 feels heavy and premium)
+    const walkX = (x - startX) * 1.5; 
+    const walkY = (y - startY) * 1.5; 
+    
+    targetX = startScrollLeft - walkX;
+    targetY = startScrollTop - walkY;
+    
+    if (!isAnimating) {
+      isAnimating = true;
+      requestAnimationFrame(smoothScroll);
+    }
+  });
+
+  // Keep physics synced if user uses a trackpad/mousewheel instead
+  slider.addEventListener('scroll', () => {
+    if (!isDown && !isAnimating) {
+      targetX = slider.scrollLeft;
+      targetY = slider.scrollTop;
+      currentX = slider.scrollLeft;
+      currentY = slider.scrollTop;
+    }
+  });
+
+  // The Gliding Logic
+  function smoothScroll() {
+    // 0.06 is the friction. Lower = smoother/floatier, Higher = snappier
+    currentX += (targetX - currentX) * 0.06;
+    currentY += (targetY - currentY) * 0.06;
+    
+    slider.scrollLeft = currentX;
+    slider.scrollTop = currentY;
+    
+    if (Math.abs(targetX - currentX) > 0.5 || Math.abs(targetY - currentY) > 0.5) {
+      requestAnimationFrame(smoothScroll);
+    } else {
+      isAnimating = false;
+      currentX = targetX;
+      currentY = targetY;
+      slider.scrollLeft = currentX;
+      slider.scrollTop = currentY;
+    }
+  }
 })();
