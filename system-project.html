@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>System Architecture — Mikael Santino Pineda</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🖥</text></svg>" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="scroll-progress"></div>
+  <div id="cursor-dot"></div>
+  <div id="cursor-ring"><span id="cursor-label"></span></div>
+  <canvas id="bg-canvas"></canvas>
+  <div id="bg-grid"></div>
+  <div id="bg-glow-tl"></div>
+  <div id="bg-glow-br"></div>
+
+  <!-- Header -->
+  <header id="header">
+    <div class="container header-inner">
+      <a href="#home" class="logo" data-cursor="">Mikael<span class="accent">.</span><div class="logo-glitch"></div></a>
+      
+      <div class="header-actions">
+        <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme" data-cursor="THEME">
+          <i class='bx bx-sun' id="theme-icon"></i>
+        </button>
+        <button id="menu-toggle" aria-label="Toggle menu" data-cursor="MENU">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div id="mobile-menu">
+    <a href="index.html#home" class="mobile-link">Home</a>
+    <a href="index.html#about" class="mobile-link">About</a>
+    <a href="index.html#projects" class="mobile-link">Projects</a>
+    <a href="index.html#contact" class="mobile-link">Contact</a>
+  </div>
+
+  <main class="project-page">
+    <section class="project-header reveal">
+      <div class="container">
+        <a href="index.html#projects" class="back-btn magnetic" data-cursor="BACK"><i class='bx bx-arrow-back'></i> Return to Terminal</a>
+        <h1 class="project-title">[System Name]</h1>
+        <div class="project-meta">
+          <div class="meta-item"><span>Status</span> Prototype</div>
+          <div class="meta-item"><span>Role</span> System Architect</div>
+          <div class="meta-item"><span>Type</span> Logistics / Routing</div>
+          <div class="meta-item"><span>Year</span> 2026</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Architecture Blueprint -->
+    <section class="project-hero-media reveal">
+      <div class="container">
+        <div class="media-placeholder arch-placeholder tilt-card" data-cursor="VIEW DIAGRAM">
+          <i class='bx bx-network-chart'></i>
+          <span>Level 1 Context Diagram Placeholder</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- System Breakdown -->
+    <section class="project-details reveal">
+      <div class="container project-details-grid">
+        <div class="project-description">
+          <h2>System Overview</h2>
+          <p>Describe the core technical problem this system solves. Detail the logic behind the architecture, the expected data paths, and the end-user interaction flow.</p>
+          <h2>Data Flow & Security</h2>
+          <p>Explain how data moves from the front-end interfaces to the database. Highlight any specific routing logic, security measures, or algorithms utilized (e.g., shortest-path routing for logistics).</p>
+        </div>
+        <div class="project-sidebar">
+           <h3>Technology Stack</h3>
+           <div class="tag-row">
+             <span class="tag">JavaScript (ES6)</span>
+             <span class="tag">SQL</span>
+             <span class="tag">Node.js</span>
+             <span class="tag">System Design</span>
+           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Core Modules Grid -->
+    <section class="system-features reveal">
+      <div class="container">
+        <h2 style="margin-bottom: 2rem; font-weight: 800; font-size: 1.75rem;">Core Modules Loaded</h2>
+        <div class="feature-grid">
+           <!-- Module 1 -->
+           <div class="feature-card tilt-card">
+              <i class='bx bx-data feature-icon'></i>
+              <h3>Database Mapping</h3>
+              <p>Relational mapping of users, delivery nodes, and transactional records optimized for fast querying.</p>
+           </div>
+           <!-- Module 2 -->
+           <div class="feature-card tilt-card">
+              <i class='bx bx-sitemap feature-icon'></i>
+              <h3>API Gateway</h3>
+              <p>RESTful endpoints routing client requests securely to backend microservices.</p>
+           </div>
+           <!-- Module 3 -->
+           <div class="feature-card tilt-card">
+              <i class='bx bx-mobile-alt feature-icon'></i>
+              <h3>Client Interface</h3>
+              <p>Responsive, low-latency UI components allowing users to track real-time system states.</p>
+           </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="footer">
+    <div class="container footer-inner">
+      <div class="footer-logo">Mikael<span class="accent">.</span></div>
+      <div class="footer-links">
+        <a href="https://www.behance.net/gallery/242967603/Graphic-Design-Portfolio" target="_blank" rel="noreferrer" class="magnetic" data-cursor="LINK"><i class='bx bxl-behance'></i> Behance</a>
+        <a href="mailto:pinedamakisantino@gmail.com" class="magnetic" data-cursor="EMAIL"><i class='bx bx-envelope'></i> pinedamakisantino@gmail.com</a>
+      </div>
+      <div class="footer-copy">© 2026 Mikael Santino Pineda</div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

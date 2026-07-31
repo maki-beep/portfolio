@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mikael Santino Pineda — Portfolio</title>
+  <meta name="description" content="IT Student & Graphic Designer at PUP Manila. Building clean, intuitive interfaces." />
+  <meta property="og:title" content="Mikael Santino Pineda — Portfolio" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🖥</text></svg>" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Scroll Progress -->
+  <div id="scroll-progress"></div>
+
+  <!-- Custom Cursor -->
+  <div id="cursor-dot"></div>
+  <div id="cursor-ring"><span id="cursor-label"></span></div>
+
+  <!-- IT Blueprint Background -->
+  <canvas id="bg-canvas"></canvas>
+  <div id="bg-grid"></div>
+  <div id="bg-glow-tl"></div>
+  <div id="bg-glow-br"></div>
+
+  <!-- Fixed Preloader (Hybrid IT + Design) -->
+  <div id="preloader">
+    <div id="loader-panel">
+      <div class="loader-title">INITIALIZING WORKSPACE</div>
+      <div class="loader-split">
+        <!-- IT Aspect -->
+        <div class="loader-half it-side">
+          <div class="half-header"><i class='bx bx-terminal'></i> IT / Dev</div>
+          <div class="half-body font-mono" id="it-log">> sys.boot()</div>
+        </div>
+        <!-- Design Aspect -->
+        <div class="loader-half design-side">
+          <div class="half-header"><i class='bx bx-palette'></i> Graphic Design</div>
+          <div class="half-body font-sans" id="des-log">Allocating Canvas...</div>
+        </div>
+      </div>
+
+      <div class="loader-progress-wrap">
+        <div class="loader-progress-bg">
+          <div class="loader-bar" id="loader-bar"></div>
+        </div>
+        <div class="loader-pct" id="loader-pct">0%</div>
+      </div>
+    </div>
+
+    <!-- Final Logo Reveal -->
+    <div id="preloader-logo" class="hidden">
+      <div class="logo-text">Mikael<span class="accent">.</span></div>
+      <div class="logo-sub">HYBRID CREATIVE ENGINE</div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header id="header">
+    <div class="container header-inner">
+      <a href="#home" class="logo" data-cursor="">Mikael<span class="accent">.</span><div class="logo-glitch"></div></a>
+      
+      <div class="header-actions">
+        <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme" data-cursor="THEME">
+          <i class='bx bx-sun' id="theme-icon"></i>
+        </button>
+        <button id="menu-toggle" aria-label="Toggle menu" data-cursor="MENU">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Menu -->
+  <div id="mobile-menu">
+    <a href="#home" class="mobile-link">Home</a>
+    <a href="#about" class="mobile-link">About</a>
+    <a href="#projects" class="mobile-link">Projects</a>
+    <a href="#contact" class="mobile-link">Contact</a>
+    <a href="Resume_Pineda.pdf" download class="mobile-resume">Download Resume</a>
+  </div>
+
+  <main>
+
+    <!-- ===== HERO ===== -->
+    <section id="home" class="hero">
+      <div class="container hero-grid">
+
+        <div class="hero-left reveal">
+          <div class="hero-badges">
+            <div class="hero-status">
+              <span class="status-dot"></span>
+              SYS: ONLINE &nbsp;|&nbsp; LOC: PUP_MNL &nbsp;|&nbsp; PING: <span id="ping">14</span>ms
+            </div>
+            <div class="hero-role-badge">IT Student & Graphic Designer</div>
+          </div>
+
+          <!-- Interactive Figma Edit Box (Now on the Title) -->
+          <div class="figma-edit-box reveal">
+            <!-- Anchor Corners -->
+            <div class="f-anchor tl"></div>
+            <div class="f-anchor tr"></div>
+            <div class="f-anchor bl"></div>
+            <div class="f-anchor br"></div>
+            
+            <!-- Top Labels -->
+            <div class="f-label-top">
+              <div class="f-tag">h1 / Hero Title</div>
+              <div class="f-user">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="#000" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/></svg>
+                You
+              </div>
+            </div>
+
+            <!-- Bottom Label -->
+            <div class="f-label-bottom">
+              <div class="f-cursor-icon">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--purple-300)" stroke="var(--purple-300)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transform: rotate(-15deg);"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/></svg>
+              </div>
+              <div class="f-status">name &rarr; typing...</div>
+            </div>
+
+            <!-- Typing Content (Massive Title) -->
+            <h1 class="hero-title" style="margin-bottom: 0;">
+              <span id="hero-title-type"></span><span class="cursor-blink"></span>
+            </h1>
+          </div>
+
+          <!-- Restored Static Subtitle -->
+          <div class="hero-subtitle-wrap reveal">
+            <p class="hero-subtitle">I bring a blend of technical support capabilities and a strong passion for digital arts and visual branding — building clean, intuitive interfaces that solve real-world problems.</p>
+          </div>
+
+          <div class="hero-btns">
+            <a href="#projects" class="btn-primary magnetic" data-cursor="">View Projects</a>
+            <a href="#contact" class="btn-ghost magnetic" data-cursor="">Get in touch</a>
+          </div>
+
+          <div class="hero-stats">
+            <div class="hero-stat"><span class="stat-num">01</span><span class="stat-label">System Servicing</span></div>
+            <div class="hero-stat"><span class="stat-num">02</span><span class="stat-label">Brand Identity</span></div>
+            <div class="hero-stat"><span class="stat-num">03</span><span class="stat-label">UI/UX Prototyping</span></div>
+          </div>
+        </div>
+
+        <div class="hero-right reveal">
+          <div class="portrait-wrapper tilt-card" data-cursor="PEEK">
+            <div class="portrait-placeholder">MSP</div>
+            <img src="lbj.webp" alt="Mikael Santino Pineda" class="portrait-img" id="portrait-img" />
+            <div class="portrait-scanner"></div>
+            <div class="portrait-border"></div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Data Bus Section Divider -->
+    <div class="section-divider">
+      <div class="data-bus-block left"></div>
+      <div class="divider-icon"><div class="divider-glow"></div><i class='bx bx-chip'></i></div>
+      <div class="data-bus-block right"></div>
+    </div>
+
+    <!-- ===== ABOUT / BENTO ===== -->
+    <section id="about" class="about">
+      <div class="container">
+        <div class="section-header reveal">
+          <h2>About System</h2>
+          <p>Architecture mapping and creative modules loaded.</p>
+        </div>
+
+        <div class="bento-grid" id="bento-grid">
+
+          <!-- Card 1: Core Stack -->
+          <div class="bento-card stack-card reveal tilt-card">
+            <div class="stack-tools">
+              <div class="tool-item"><i class='bx bxl-figma'></i><div><div class="tool-name">Figma</div><div class="tool-role">UI/UX</div></div></div>
+              <div class="tool-item"><i class='bx bxl-adobe'></i><div><div class="tool-name">Adobe CC</div><div class="tool-role">PS & AI</div></div></div>
+              <div class="tool-item"><i class='bx bxl-visual-studio'></i><div><div class="tool-name">VS Code</div><div class="tool-role">Front-End</div></div></div>
+              <div class="tool-item"><i class='bx bxl-c-plus-plus'></i><div><div class="tool-name">C++</div><div class="tool-role">Programming</div></div></div>
+            </div>
+            <div>
+              <div class="card-label">Technical Skills</div>
+              <div class="tag-row">
+                <span class="tag">Web Design</span>
+                <span class="tag">Front-End</span>
+                <span class="tag">Graphic Design</span>
+                <span class="tag">Illustration</span>
+                <span class="tag">System Servicing</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2: Digital Arts -->
+          <div class="bento-card art-card reveal tilt-card" data-cursor="PEEK">
+            <div class="mac-bar purple">
+              <div class="mac-dots"><span></span><span></span><span></span></div>
+              <div class="mac-title">digital-art.psd</div>
+              <div class="mac-spacer"></div>
+            </div>
+            <div class="art-canvas">
+              <div class="art-circle"></div>
+              <div class="art-square glass-effect"></div>
+            </div>
+            <div class="card-footer-abs solid-overlay">
+              <div class="card-footer-title">Digital Arts</div>
+              <div class="card-footer-sub">Logo Design & Identity</div>
+            </div>
+          </div>
+
+          <!-- Card 3: 3D System Arch -->
+          <div class="bento-card arch-card reveal tilt-card" data-cursor="PEEK">
+            <div class="mac-bar">
+              <div class="mac-dots traffic"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+              <div class="mac-title">architecture.js</div>
+              <div class="mac-spacer"></div>
+            </div>
+            <div class="arch-canvas">
+              <div class="arch-3d">
+                <div class="arch-connector"></div>
+                <div class="arch-layer layer-top"><span>UI Layer</span></div>
+                <div class="arch-layer layer-mid"><span>API Gateway</span></div>
+                <div class="arch-layer layer-bot"><span>Database</span></div>
+                <div class="arch-packet"></div>
+                <div class="arch-packet delay"></div>
+              </div>
+            </div>
+            <div class="card-footer-abs solid-overlay">
+              <div class="card-footer-title">System Arch</div>
+              <div class="card-footer-sub">Structure & Flow</div>
+            </div>
+          </div>
+
+          <!-- Card 4: Interactive CLI Terminal -->
+          <div class="bento-card terminal-card reveal tilt-card">
+            <div class="mac-bar">
+              <div class="mac-dots traffic"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+              <div class="mac-title">mikael_cli.sh — bash</div>
+              <div class="mac-spacer"></div>
+            </div>
+            <div class="terminal-body" id="terminal-body">
+              <div class="term-line"><span class="term-output">MikaelOS v1.0.0 (tty1)</span></div>
+              <div class="term-line"><span class="term-output">Type 'help' for available commands.</span></div>
+            </div>
+            <div class="term-input-row">
+              <span class="term-user">mikael@pup-it</span>:<span class="term-path">~</span>$&nbsp;
+              <input type="text" id="terminal-input" class="term-input" placeholder="try 'projects' or 'skills'..." spellcheck="false" autocomplete="off" />
+            </div>
+          </div>
+
+          <!-- Card 5: Education -->
+          <div class="bento-card edu-card reveal tilt-card">
+            <div class="mac-bar edu-theme">
+              <div class="mac-dots edu"><span></span><span></span><span></span></div>
+              <div class="mac-title">education.log</div>
+              <div class="mac-spacer"></div>
+            </div>
+            <div class="edu-body">
+              <i class='bx bxs-graduation edu-icon'></i>
+              <div class="edu-year">Expected 2027</div>
+              <div class="edu-role">Diploma in Information Technology</div>
+              <div class="edu-org">Polytechnic University of the Philippines</div>
+            </div>
+          </div>
+
+          <!-- Card 6: Certifications -->
+          <div class="bento-card cert-card reveal tilt-card">
+            <div class="mac-bar cert-theme">
+              <div class="mac-dots cert"><span></span><span></span><span></span></div>
+              <div class="mac-title">certifications.log</div>
+              <div class="mac-spacer"></div>
+            </div>
+            <div class="cert-body">
+              <div class="cert-item">
+                <i class='bx bxs-medal cert-icon'></i>
+                <div>
+                  <div class="cert-name">Computer System Servicing NC II</div>
+                  <div class="cert-org">TESDA · 2024</div>
+                </div>
+              </div>
+              <div class="cert-item">
+                <i class='bx bxs-medal cert-icon'></i>
+                <div>
+                  <div class="cert-name">Visual Graphic Design NC III</div>
+                  <div class="cert-org">TESDA · 2025</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 7: GDG Experience (full width) -->
+          <div class="bento-card gdg-card reveal tilt-card">
+            <canvas id="binary-canvas" class="binary-canvas"></canvas>
+            <div class="mac-bar gdg-theme">
+              <div class="mac-dots gdg"><span></span><span></span><span></span></div>
+              <div class="mac-title">experience.log</div>
+              <div class="mac-spacer"></div>
+            </div>
+            <div class="gdg-body">
+              <div class="gdg-icon"><i class='bx bxl-google'></i></div>
+              <div class="gdg-text">
+                <div class="gdg-org">GDG On Campus — PUP</div>
+                <div class="gdg-roles">Graphic Design Associate &nbsp;·&nbsp; UI/UX Cadet</div>
+                <div class="gdg-desc">Contributing visual identity, social media assets, and UI/UX prototypes for the campus developer community.</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Data Bus Section Divider -->
+    <div class="section-divider">
+      <div class="data-bus-block left"></div>
+      <div class="divider-icon"><div class="divider-glow"></div><i class='bx bx-code-curly'></i></div>
+      <div class="data-bus-block right"></div>
+    </div>
+
+    <!-- ===== PROJECTS ===== -->
+    <section id="projects" class="projects">
+      <div class="container">
+        <div class="projects-header reveal">
+          <div>
+            <h2>Project Directory</h2>
+            <p>A split view of logical architectures and visual identities.</p>
+          </div>
+          <div class="tab-switcher">
+            <button class="tab-btn active" data-tab="IT">IT Projects</button>
+            <button class="tab-btn" data-tab="GD">Graphic Design</button>
+          </div>
+        </div>
+
+        <!-- IT Projects Tab -->
+        <div id="tab-IT" class="tab-panel active">
+          <div class="it-projects">
+
+            <!-- IT Project 1 -->
+            <div class="it-project">
+              <div class="it-info">
+                <div class="project-num">01</div>
+                <h3>puptask</h3>
+                <p>A prototype delivery system designed specifically for logistics and routing throughout the campus area.</p>
+                <div class="tag-row"><span class="tag">Logistics</span><span class="tag">System Design</span></div>
+              </div>
+              <div class="code-window tilt-card" data-output="> Running delivery.js...&#10;[SUCCESS] Route calculated: Main Campus -&gt; CEA (Distance: 450m)&#10;[LOG] Order #1042 dispatched cleanly!">
+                <div class="code-bar">
+                  <div class="mac-dots traffic"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+                  <div class="code-filename">delivery.js</div>
+                  <button class="run-btn magnetic" data-cursor=""><i class='bx bx-play'></i> RUN</button>
+                </div>
+                <div class="code-body">
+                  <div class="line-nums"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span></div>
+                  <pre><code><span class="code-kw">function</span> <span class="code-fn">routeDelivery</span>(<span class="code-var">order</span>) {
+  <span class="code-kw">if</span> (<span class="code-var">order</span>.zone &amp;&amp; !<span class="code-var">order</span>.delayed) {
+    <span class="code-fn">dispatch</span>(<span class="code-var">order</span>); <span class="code-comment">// campus route</span>
+  } <span class="code-kw">else</span> {
+    <span class="code-var">queue</span>.<span class="code-fn">push</span>(<span class="code-var">order</span>);
+  }
+}</code></pre>
+                </div>
+                <div class="code-console"><span class="console-placeholder">> Status: Ready to execute. Click Run.</span></div>
+              </div>
+            </div>
+
+            <!-- IT Project 2 -->
+            <div class="it-project reverse">
+              <div class="it-info">
+                <div class="project-num">02</div>
+                <h3>Altura-579</h3>
+                <p>Project proposal and UI outline for a smart health community tracking application.</p>
+                <div class="tag-row"><span class="tag">Health Tech</span><span class="tag">Prototyping</span></div>
+              </div>
+              <div class="code-window tilt-card" data-output="> Running vitals.js...&#10;[ANALYZING] Heart Rate: 78 BPM | Steps: 8,420&#10;[STATUS] Health status: STABLE (Normal Range)">
+                <div class="code-bar">
+                  <div class="mac-dots traffic"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+                  <div class="code-filename">vitals.js</div>
+                  <button class="run-btn magnetic" data-cursor=""><i class='bx bx-play'></i> RUN</button>
+                </div>
+                <div class="code-body">
+                  <div class="line-nums"><span>1</span><span>2</span><span>3</span><span>4</span></div>
+                  <pre><code><span class="code-kw">const</span> <span class="code-fn">trackVitals</span> = (<span class="code-var">user</span>) =&gt; {
+  <span class="code-kw">const</span> { <span class="code-var">steps</span>, <span class="code-var">heartRate</span> } = <span class="code-var">user</span>.today;
+  <span class="code-kw">return</span> <span class="code-var">heartRate</span> &lt; <span class="code-num">100</span> ? <span class="code-str">'stable'</span> : <span class="code-str">'flag'</span>;
+};</code></pre>
+                </div>
+                <div class="code-console"><span class="console-placeholder">> Status: Ready to execute. Click Run.</span></div>
+              </div>
+            </div>
+
+            <!-- IT Project 3 -->
+            <div class="it-project">
+              <div class="it-info">
+                <div class="project-num">03</div>
+                <h3>iSkout</h3>
+                <p>A comprehensive business directory system mapping out services, food, and businesses around PUP campuses.</p>
+                <div class="tag-row"><span class="tag">Directory</span><span class="tag">System Arch</span></div>
+              </div>
+              <div class="code-window tilt-card" data-output="> Executing directory.sql...&#10;[SQL] Fetching local PUP food stalls...&#10;[RESULTS] 12 businesses returned. Sorted by distance (ASC).">
+                <div class="code-bar">
+                  <div class="mac-dots traffic"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+                  <div class="code-filename">directory.sql</div>
+                  <button class="run-btn magnetic" data-cursor=""><i class='bx bx-play'></i> RUN</button>
+                </div>
+                <div class="code-body">
+                  <div class="line-nums"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
+                  <pre><code><span class="code-kw">SELECT</span> name, category, distance
+<span class="code-kw">FROM</span> businesses
+<span class="code-kw">WHERE</span> campus = <span class="code-str">'PUP'</span>
+<span class="code-kw">ORDER BY</span> distance <span class="code-kw">ASC</span>;
+<span class="code-comment">-- returns nearest local stalls</span></code></pre>
+                </div>
+                <div class="code-console"><span class="console-placeholder">> Status: Ready to execute. Click Run.</span></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Graphic Design Tab -->
+        <div id="tab-GD" class="tab-panel">
+
+          <div class="gd-filters">
+            <button class="filter-btn active" data-filter="All">All</button>
+            <button class="filter-btn" data-filter="Logo">Logo</button>
+            <button class="filter-btn" data-filter="Social Media">Social Media</button>
+            <button class="filter-btn" data-filter="Pubmats">Pubmats</button>
+            <button class="filter-btn" data-filter="UI/UX">UI/UX</button>
+          </div>
+
+          <div class="gd-grid">
+  <a href="project.html" class="gd-card tilt-card" data-cat="Logo" data-cursor="VIEW">
+    <div class="gd-card-bar"><div class="mac-dots purple"><span></span><span></span><span></span></div><div class="mac-title">gdg-logo.ai</div></div>
+    <div class="gd-preview Logo"><div class="gd-shape"><div class="logo-outer"><div class="logo-inner"></div></div></div><div class="gd-hover-overlay"><span>View Project</span></div></div>
+    <div class="gd-info"><div class="gd-title">GDG Chapter Identity</div><div class="gd-cat">Logo</div></div>
+  </a>
+  <a href="project.html" class="gd-card tilt-card" data-cat="Pubmats" data-cursor="VIEW">
+    <div class="gd-card-bar"><div class="mac-dots purple"><span></span><span></span><span></span></div><div class="mac-title">conference.psd</div></div>
+    <div class="gd-preview Pubmats"><div class="gd-shape"><div class="pub-bars"><div></div><div></div><div></div></div></div><div class="gd-hover-overlay"><span>View Project</span></div></div>
+    <div class="gd-info"><div class="gd-title">Tech Conference</div><div class="gd-cat">Pubmats</div></div>
+  </a>
+  <a href="project.html" class="gd-card tilt-card" data-cat="UI/UX" data-cursor="VIEW">
+    <div class="gd-card-bar"><div class="mac-dots purple"><span></span><span></span><span></span></div><div class="mac-title">altura-ui.fig</div></div>
+    <div class="gd-preview UIUX"><div class="gd-shape"><div class="ui-mock"></div></div><div class="gd-hover-overlay"><span>View Project</span></div></div>
+    <div class="gd-info"><div class="gd-title">Altura Mobile Interface</div><div class="gd-cat">UI/UX</div></div>
+  </a>
+  <a href="project.html" class="gd-card tilt-card" data-cat="Social Media" data-cursor="VIEW">
+    <div class="gd-card-bar"><div class="mac-dots purple"><span></span><span></span><span></span></div><div class="mac-title">campaign-post.psd</div></div>
+    <div class="gd-preview Social"><div class="gd-shape"><div class="social-card"><div class="social-avatar"></div></div></div><div class="gd-hover-overlay"><span>View Project</span></div></div>
+    <div class="gd-info"><div class="gd-title">Agency Campaign</div><div class="gd-cat">Social Media</div></div>
+  </a>
+  <a href="project.html" class="gd-card tilt-card" data-cat="Pubmats" data-cursor="VIEW">
+    <div class="gd-card-bar"><div class="mac-dots purple"><span></span><span></span><span></span></div><div class="mac-title">recruitment.ai</div></div>
+    <div class="gd-preview Pubmats"><div class="gd-shape"><div class="pub-bars"><div></div><div></div><div></div></div></div><div class="gd-hover-overlay"><span>View Project</span></div></div>
+    <div class="gd-info"><div class="gd-title">Campus Recruitment</div><div class="gd-cat">Pubmats</div></div>
+  </a>
+  <a href="project.html" class="gd-card tilt-card" data-cat="UI/UX" data-cursor="VIEW">
+    <div class="gd-card-bar"><div class="mac-dots purple"><span></span><span></span><span></span></div><div class="mac-title">iskout-app.fig</div></div>
+    <div class="gd-preview UIUX"><div class="gd-shape"><div class="ui-mock"></div></div><div class="gd-hover-overlay"><span>View Project</span></div></div>
+    <div class="gd-info"><div class="gd-title">Directory Web App</div><div class="gd-cat">UI/UX</div></div>
+  </a>
+</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Data Bus Section Divider -->
+    <div class="section-divider">
+      <div class="data-bus-block left"></div>
+      <div class="divider-icon"><div class="divider-glow"></div><i class='bx bx-message-rounded-dots'></i></div>
+      <div class="data-bus-block right"></div>
+    </div>
+
+    <!-- ===== CONTACT ===== -->
+    <section id="contact" class="contact">
+      <div class="container">
+        <div class="contact-card reveal tilt-card">
+          <div class="mac-dots-abs purple"><span></span><span></span><span></span></div>
+          <div class="contact-glow"></div>
+          <div class="contact-header">
+            <h2>Let's Build Something<br/>Meaningful Together</h2>
+            <p class="contact-sub">Available for OJT opportunities. Reach me at <span class="accent">+63 967 235 5196</span>.</p>
+          </div>
+          <form id="contact-form" class="contact-form" novalidate>
+            <div class="form-row">
+              <div class="form-field">
+                <input type="text" id="f-name" required placeholder="Name" />
+                <label for="f-name">Your Name</label>
+              </div>
+              <div class="form-field">
+                <input type="email" id="f-email" required placeholder="Email" />
+                <label for="f-email">Your Email</label>
+              </div>
+            </div>
+            <div class="form-field">
+              <textarea id="f-message" required placeholder="Message" rows="4"></textarea>
+              <label for="f-message">Your Message</label>
+            </div>
+            <button type="submit" class="btn-submit magnetic" id="submit-btn" data-cursor="">SEND MESSAGE</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer id="footer">
+    <div class="container footer-inner">
+      <div class="footer-logo">Mikael<span class="accent">.</span></div>
+      <div class="footer-links">
+        <a href="https://www.behance.net/gallery/242967603/Graphic-Design-Portfolio" target="_blank" rel="noreferrer" class="magnetic" data-cursor="LINK"><i class='bx bxl-behance'></i> Behance</a>
+        <a href="mailto:pinedamakisantino@gmail.com" class="magnetic" data-cursor="EMAIL"><i class='bx bx-envelope'></i> pinedamakisantino@gmail.com</a>
+        <span class="magnetic" data-cursor="PHONE"><i class='bx bx-phone'></i> +63 967 235 5196</span>
+        <a href="Resume_Pineda.pdf" download class="accent-link magnetic" data-cursor="DOWNLOAD"><i class='bx bx-download'></i> Resume</a>
+      </div>
+      <div class="footer-copy">© 2026 Mikael Santino Pineda</div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
