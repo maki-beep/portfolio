@@ -28,35 +28,66 @@
   <div id="bg-glow-tl"></div>
   <div id="bg-glow-br"></div>
 
-  <!-- Fixed Preloader (Hybrid IT + Design) -->
-  <div id="preloader">
-    <div id="loader-panel">
-      <div class="loader-title">INITIALIZING WORKSPACE</div>
-      <div class="loader-split">
-        <!-- IT Aspect -->
-        <div class="loader-half it-side">
-          <div class="half-header"><i class='bx bx-terminal'></i> IT / Dev</div>
-          <div class="half-body font-mono" id="it-log">> sys.boot()</div>
+<!-- Interactive Boot/Wake Screen (Hybrid Theme + Animations) -->
+  <div id="boot-screen" class="boot-screen ar-theme">
+    <div class="boot-overlay-grid"></div>
+
+    <!-- Center Content -->
+    <div class="ar-content">
+      <div class="ar-top-text boot-anim-1">INITIALIZING WORKSPACE, PIXEL BY PIXEL.</div>
+
+      <!-- Interactive Figma Edit Box (Typing Animation) -->
+      <div class="figma-edit-box center-box boot-anim-2" style="margin-bottom: 0;">
+        <!-- Figma Anchors -->
+        <div class="f-anchor tl"></div><div class="f-anchor tr"></div>
+        <div class="f-anchor bl"></div><div class="f-anchor br"></div>
+        
+        <!-- Figma UI Labels (Drag label removed) -->
+        <div class="f-label-top">
+          <div class="f-tag">h1 / Name</div>
+          <div class="f-user">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="#000" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/></svg>
+            You
+          </div>
         </div>
-        <!-- Design Aspect -->
-        <div class="loader-half design-side">
-          <div class="half-header"><i class='bx bx-palette'></i> Graphic Design</div>
-          <div class="half-body font-sans" id="des-log">Allocating Canvas...</div>
+
+        <div class="f-label-bottom">
+          <div class="f-cursor-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--purple-300)" stroke="var(--purple-300)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transform: rotate(-15deg);"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/></svg>
+          </div>
+          <div class="f-status">typing...</div>
         </div>
+        
+        <h1 class="ar-name-solid">
+          <span id="boot-title-type" data-text="MIKAEL<br/>PINEDA"></span><span class="cursor-blink"></span>
+        </h1>
       </div>
 
-      <div class="loader-progress-wrap">
-        <div class="loader-progress-bg">
-          <div class="loader-bar" id="loader-bar"></div>
-        </div>
-        <div class="loader-pct" id="loader-pct">0%</div>
-      </div>
+      <div class="ar-subtitle boot-anim-4">Hybrid IT structure, bold creative vision.</div>
     </div>
 
-    <!-- Final Logo Reveal -->
-    <div id="preloader-logo" class="hidden">
-      <div class="logo-text">Mikael<span class="accent">.</span></div>
-      <div class="logo-sub">HYBRID CREATIVE ENGINE</div>
+    <!-- Glassmorphism Continue Button -->
+    <button id="boot-continue-btn" class="ar-btn boot-box magnetic boot-anim-5" data-cursor="ENTER">
+      <div class="mini-orb"></div>
+      <span class="ar-btn-text">Initialize Workspace</span>
+      <span class="ar-btn-key">↵</span>
+    </button>
+  </div>
+
+  <!-- Cinematic Split-Mask Preloader -->
+  <div id="preloader" class="cinematic-loader">
+    <!-- Split masking panels for the cinematic exit -->
+    <div class="loader-mask mask-top"></div>
+    <div class="loader-mask mask-bottom"></div>
+    
+    <div class="loader-content">
+      <div class="loader-counter"><span id="loader-pct">0</span><span class="loader-sym">%</span></div>
+      <div class="loader-logs">
+        <span id="loader-log-text">SYS.BOOT_SEQUENCE()</span>
+      </div>
+      <div class="loader-progress-container">
+        <div class="loader-progress-bar" id="loader-bar"></div>
+      </div>
     </div>
   </div>
 

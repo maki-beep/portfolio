@@ -8,98 +8,140 @@
 const PREFERS_REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* ══════════════════════════════════════
-   1. PRELOADER (Hybrid Engine)
+   1. BOOT SEQUENCE & PRELOADER
 ══════════════════════════════════════ */
-(function Preloader() {
+
+// Phase 2: The Cinematic Loading Counter
+function startPreloader() {
   const el = document.getElementById('preloader');
-  
-  // FIX: If there is no preloader on this page (like project subpages), 
-  // skip the loader and start the typing animations immediately!
   if (!el) {
     setTimeout(triggerHeroAnimations, 100);
     return;
   }
 
-  const panel   = document.getElementById('loader-panel');
-  const logoEl  = document.getElementById('preloader-logo');
-  const barEl   = document.getElementById('loader-bar');
-  const pctEl   = document.getElementById('loader-pct');
-  const itLog   = document.getElementById('it-log');
-  const desLog  = document.getElementById('des-log');
-
-  document.body.style.overflow = 'hidden';
-  window.scrollTo(0, 0);
+  const pctEl = document.getElementById('loader-pct');
+  const barEl = document.getElementById('loader-bar');
+  const logEl = document.getElementById('loader-log-text');
 
   function finish() {
     el.classList.add('exit');
     document.body.style.overflow = '';
     el.addEventListener('transitionend', () => el.remove(), { once: true });
-    triggerHeroAnimations();
+    setTimeout(triggerHeroAnimations, 400); 
   }
 
-  if (PREFERS_REDUCED_MOTION || !panel || !logoEl || !barEl || !pctEl) {
+  if (PREFERS_REDUCED_MOTION || !pctEl || !barEl || !logEl) {
     finish();
     return;
   }
 
-  const itSteps = [
-    "> sys.boot()",
-    "> loading_kernel...",
-    "> mounting_network...",
-    "> compiling_dom...",
-    "> sys.ready === true"
-  ];
-  const desSteps = [
-    "Allocating Canvas...",
-    "Fetching Fonts...",
-    "Rendering Vectors...",
-    "Applying Gradients...",
-    "Visuals Perfected."
+  const logs = [
+    "SYS.BOOT_SEQUENCE()",
+    "COMPILING_LOGIC...",
+    "RENDERING_VECTORS...",
+    "ESTABLISHING_ROUTING...",
+    "CALIBRATING_COLOR_SPACE...",
+    "MOUNTING_DOM...",
+    "APPLYING_SHADERS...",
+    "WORKSPACE_READY"
   ];
 
   let progress = 0;
   let stepIdx = 0;
 
   const interval = setInterval(() => {
-    // Generate pseudo-random loading spikes
-    progress += Math.floor(Math.random() * 8) + 2;
+    progress += Math.floor(Math.random() * 4) + 1; 
     if (progress >= 100) progress = 100;
 
     barEl.style.width = progress + '%';
-    pctEl.textContent = progress + '%';
+    pctEl.textContent = progress;
 
-    // Update text sequences based on progress percentage
-    const expectedStep = Math.min(Math.floor((progress / 100) * itSteps.length), itSteps.length - 1);
+    const expectedStep = Math.min(Math.floor((progress / 100) * logs.length), logs.length - 1);
     if (expectedStep > stepIdx) {
       stepIdx = expectedStep;
-      if (itLog) itLog.textContent = itSteps[stepIdx];
-      if (desLog) desLog.textContent = desSteps[stepIdx];
+      logEl.textContent = logs[stepIdx];
     }
 
     if (progress === 100) {
       clearInterval(interval);
-      if (itLog) itLog.textContent = "> execution_complete";
-      if (desLog) desLog.textContent = "Canvas Rendered.";
-
-      // Collapse the panel and reveal the final logo
-      setTimeout(() => {
-        panel.style.transform = 'scale(0.95)';
-        panel.style.opacity = '0';
-
-        setTimeout(() => {
-          panel.style.display = 'none';
-          logoEl.classList.remove('hidden');
-
-          setTimeout(finish, 1000);
-        }, 400);
-      }, 500);
+      logEl.textContent = "SYSTEM.ONLINE";
+      logEl.style.color = "var(--accent-cyan)";
+      setTimeout(finish, 600);
     }
-  }, 70);
-  
-  // Set initial texts
-  if (itLog) itLog.textContent = itSteps[0];
-  if (desLog) desLog.textContent = desSteps[0];
+  }, 30); 
+}
 
+// Phase 1: The Interactive "Click to Initialize" Screen
+(function BootSequence() {
+  const bootScreen = document.getElementById('boot-screen');
+  
+  // If there is no boot screen, skip straight to the preloader
+  if (!bootScreen || PREFERS_REDUCED_MOTION) {
+    if (bootScreen) bootScreen.remove();
+    startPreloader();
+    return;
+  }
+
+  // Lock scrolling while waiting for user input
+  document.body.style.overflow = 'hidden';
+  window.scrollTo(0, 0);
+
+  // --- Add this block to trigger the Figma typing effect ---
+  const bootTitle = document.getElementById('boot-title-type');
+  if (bootTitle && !PREFERS_REDUCED_MOTION) {
+    const text = bootTitle.getAttribute('data-text');
+    let idx = 0;
+    let isTag = false;
+
+    function typeBootName() {
+      const char = text.charAt(idx);
+      if (char === '<') isTag = true;
+      if (char === '>') isTag = false;
+      
+      idx++;
+      bootTitle.innerHTML = text.slice(0, idx);
+      
+      if (idx < text.length) {
+        setTimeout(typeBootName, isTag ? 0 : 80);
+      }
+    }
+    // Start typing after the entrance animation finishes
+    setTimeout(typeBootName, 800); 
+  }
+  // ---------------------------------------------------------
+
+  // Make the custom cursor say "CREATE" when hovering over the boot screen
+  bootScreen.addEventListener('mousemove', () => {
+    const ring = document.getElementById('cursor-ring');
+    const lbl = document.getElementById('cursor-label');
+    if (ring && lbl) {
+      ring.classList.add('hovering');
+      lbl.textContent = 'CREATE';
+    }
+  });
+
+  // When the initialize button is clicked, shatter the boot screen
+  const bootBtn = document.getElementById('boot-continue-btn');
+  if (bootBtn) {
+    bootBtn.addEventListener('click', () => {
+      // Reset the custom cursor
+      const ring = document.getElementById('cursor-ring');
+      const lbl = document.getElementById('cursor-label');
+      if (ring && lbl) {
+        ring.classList.remove('hovering');
+        lbl.textContent = '';
+      }
+
+      // Trigger exit animation
+      bootScreen.classList.add('exit');
+      
+      // Wait for the blur/scale CSS transition to finish, then start Phase 2
+      setTimeout(() => {
+        bootScreen.remove();
+        startPreloader();
+      }, 800);
+    });
+  }
 })();
 
 
@@ -797,111 +839,97 @@ function triggerHeroAnimations() {
 })();
 
 /* ══════════════════════════════════════
-   18. 2D DRAGGABLE GALLERY (Smooth Momentum Physics)
+   19. DRAGGABLE FIGMA BOXES (With Snap-Back)
 ══════════════════════════════════════ */
-(function DraggableGallery2D() {
-  const slider = document.getElementById('gallery-viewport');
-  if (!slider) return;
+(function DraggableFigmaBoxes() {
+  const figmaBoxes = document.querySelectorAll('.figma-edit-box');
+  if (!figmaBoxes.length) return;
 
-  let isDown = false;
-  let startX, startY;
-  let startScrollLeft, startScrollTop;
-  
-  // Physics variables
-  let targetX = slider.scrollLeft;
-  let targetY = slider.scrollTop;
-  let currentX = slider.scrollLeft;
-  let currentY = slider.scrollTop;
-  let isAnimating = false;
+  figmaBoxes.forEach(box => {
+    let isDragging = false;
+    let currentX = 0, currentY = 0;
+    let initialX = 0, initialY = 0;
+    let xOffset = 0, yOffset = 0;
 
-  slider.addEventListener('mousedown', (e) => {
-    if (e.target.closest('a, button')) return; 
+    box.addEventListener('mousedown', dragStart);
     
-    isDown = true;
-    slider.classList.add('active');
-    
-    startX = e.pageX - slider.offsetLeft;
-    startY = e.pageY - slider.offsetTop;
-    
-    startScrollLeft = targetX;
-    startScrollTop = targetY;
+    // Attach mouseup and mousemove to window so dragging doesn't break if mouse leaves the box fast
+    window.addEventListener('mouseup', dragEnd);
+    window.addEventListener('mousemove', drag);
 
-    const ring = document.getElementById('cursor-ring');
-    const lbl = document.getElementById('cursor-label');
-    if (ring && lbl) {
-      ring.classList.add('dragging');
-      lbl.textContent = 'DRAG';
+    function dragStart(e) {
+      // Don't drag if they are selecting text
+      if (e.target.tagName.toLowerCase() === 'span' && window.getSelection().toString() !== '') return;
+      
+      // Remove the spring physics so it follows the mouse instantly without lag
+      box.classList.remove('snap-back');
+      
+      initialX = e.clientX - xOffset;
+      initialY = e.clientY - yOffset;
+
+      if (e.target === box || box.contains(e.target)) {
+        isDragging = true;
+        box.classList.add('is-dragging');
+        
+        // Sync with custom cursor
+        const ring = document.getElementById('cursor-ring');
+        const lbl = document.getElementById('cursor-label');
+        if (ring && lbl) {
+          ring.classList.add('dragging');
+          lbl.textContent = 'MOVE';
+        }
+      }
+    }
+
+    function dragEnd(e) {
+      if (!isDragging) return;
+      
+      isDragging = false;
+      box.classList.remove('is-dragging');
+      
+      // RUBBER BAND PHYSICS TRIGGER
+      // If this box has the boot-box/ar-drag-box classes, reset it to center
+      if (box.classList.contains('ar-drag-box')) {
+        box.classList.add('snap-back');
+        
+        // Reset all tracking coordinates
+        currentX = 0;
+        currentY = 0;
+        initialX = 0;
+        initialY = 0;
+        xOffset = 0;
+        yOffset = 0;
+        
+        // Push the box back to origin (CSS transition handles the bounce)
+        box.style.transform = `translate3d(0px, 0px, 0) scale(1)`;
+      } else {
+        // If it's a normal Figma box (like in About section), leave it where dropped
+        initialX = currentX;
+        initialY = currentY;
+      }
+      
+      // Reset custom cursor
+      const ring = document.getElementById('cursor-ring');
+      const lbl = document.getElementById('cursor-label');
+      if (ring && lbl) {
+        ring.classList.remove('dragging');
+        lbl.textContent = '';
+      }
+    }
+
+    function drag(e) {
+      if (isDragging) {
+        e.preventDefault();
+        
+        currentX = e.clientX - initialX;
+        currentY = e.clientY - initialY;
+
+        xOffset = currentX;
+        yOffset = currentY;
+
+        // Smooth hardware-accelerated movement
+        box.style.transform = `translate3d(${currentX}px, ${currentY}px, 0) scale(1.05)`;
+      }
     }
   });
-
-  slider.addEventListener('mouseleave', () => {
-    isDown = false;
-    slider.classList.remove('active');
-    resetCursor();
-  });
-
-  slider.addEventListener('mouseup', () => {
-    isDown = false;
-    slider.classList.remove('active');
-    resetCursor();
-  });
-
-  function resetCursor() {
-    const ring = document.getElementById('cursor-ring');
-    const lbl = document.getElementById('cursor-label');
-    if (ring && lbl && ring.classList.contains('dragging')) {
-      ring.classList.remove('dragging');
-      lbl.textContent = '';
-    }
-  }
-
-  slider.addEventListener('mousemove', (e) => {
-    if (!isDown) return;
-    e.preventDefault();
-    
-    const x = e.pageX - slider.offsetLeft;
-    const y = e.pageY - slider.offsetTop;
-    
-    // Multiplier controls how fast it drags (1.5 feels heavy and premium)
-    const walkX = (x - startX) * 1.5; 
-    const walkY = (y - startY) * 1.5; 
-    
-    targetX = startScrollLeft - walkX;
-    targetY = startScrollTop - walkY;
-    
-    if (!isAnimating) {
-      isAnimating = true;
-      requestAnimationFrame(smoothScroll);
-    }
-  });
-
-  // Keep physics synced if user uses a trackpad/mousewheel instead
-  slider.addEventListener('scroll', () => {
-    if (!isDown && !isAnimating) {
-      targetX = slider.scrollLeft;
-      targetY = slider.scrollTop;
-      currentX = slider.scrollLeft;
-      currentY = slider.scrollTop;
-    }
-  });
-
-  // The Gliding Logic
-  function smoothScroll() {
-    // 0.06 is the friction. Lower = smoother/floatier, Higher = snappier
-    currentX += (targetX - currentX) * 0.06;
-    currentY += (targetY - currentY) * 0.06;
-    
-    slider.scrollLeft = currentX;
-    slider.scrollTop = currentY;
-    
-    if (Math.abs(targetX - currentX) > 0.5 || Math.abs(targetY - currentY) > 0.5) {
-      requestAnimationFrame(smoothScroll);
-    } else {
-      isAnimating = false;
-      currentX = targetX;
-      currentY = targetY;
-      slider.scrollLeft = currentX;
-      slider.scrollTop = currentY;
-    }
-  }
 })();

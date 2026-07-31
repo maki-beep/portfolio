@@ -165,72 +165,330 @@ img { display: block; max-width: 100%; }
   pointer-events: none;
 }
 
-/* ── Preloader ── */
-#preloader {
-  position: fixed; inset: 0; z-index: 9990;
+/* ── INTERACTIVE BOOT SCREEN (HYBRID THEME + ANIMATIONS) ── */
+#boot-screen.ar-theme {
+  position: fixed; inset: 0; z-index: 10000;
   background: var(--bg-base);
-  display: flex; align-items: center; justify-content: center;
-  transition: transform 0.8s cubic-bezier(0.16,1,0.3,1), opacity 0.8s;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  cursor: default;
+  transition: opacity 0.8s var(--ease-cinematic), transform 0.8s var(--ease-cinematic), filter 0.8s var(--ease-cinematic);
 }
-#preloader.exit { transform: translateY(-100%); opacity: 0; pointer-events: none; }
 
-#loader-panel {
-  width: 90%; max-width: 600px;
-  background: var(--bg-card);
-  border: 1px solid rgba(255,255,255,0.05);
+#boot-screen.exit {
+  opacity: 0; transform: scale(1.15); filter: blur(12px); pointer-events: none;
+}
+
+/* Staggered Entrance Animations */
+@keyframes bootReveal {
+  0% { opacity: 0; transform: translateY(40px) scale(0.95); filter: blur(12px); }
+  100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+
+.boot-anim-1 { animation: bootReveal 1.2s var(--ease-cinematic) 0.1s forwards; opacity: 0; }
+.boot-anim-2 { animation: bootReveal 1.2s var(--ease-cinematic) 0.2s forwards; opacity: 0; }
+.boot-anim-3 { animation: bootReveal 1.2s var(--ease-cinematic) 0.3s forwards; opacity: 0; }
+.boot-anim-4 { animation: bootReveal 1.2s var(--ease-cinematic) 0.4s forwards; opacity: 0; }
+.boot-anim-5 { animation: bootReveal 1.2s var(--ease-cinematic) 0.5s forwards; opacity: 0; }
+
+/* Signature Background Grid */
+.boot-overlay-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(147, 51, 234, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(147, 51, 234, 0.05) 1px, transparent 1px);
+  background-size: 50px 50px;
+  z-index: -1; pointer-events: none;
+  mask-image: radial-gradient(circle at center, black 0%, transparent 60%);
+  -webkit-mask-image: radial-gradient(circle at center, black 0%, transparent 60%);
+}
+
+.boot-box {
+  background: 
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.12'/%3E%3C/svg%3E"),
+    linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.01));
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 30px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+.ar-content {
+  display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0;
+}
+
+.ar-top-text {
+  font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.25em;
+  color: var(--text-muted); margin-bottom: 1rem; text-transform: uppercase;
+}
+
+/* Massive Typography */
+.ar-name-solid {
+  font-family: var(--font-sans);
+  font-size: clamp(4rem, 16vw, 13rem);
+  font-weight: 800;
+  line-height: 0.85;
+  letter-spacing: -0.03em;
+  margin: 0;
+  text-transform: uppercase;
+  color: #fff; 
+  text-shadow: 0 0 40px rgba(147, 51, 234, 0.3);
+}
+
+.ar-name-solid { 
+  color: #fff; 
+  text-shadow: 0 0 40px rgba(147, 51, 234, 0.3);
+}
+
+.ar-name-outline {
+  color: transparent;
+  -webkit-text-stroke: 2px rgba(255,255,255,0.15);
+  margin-top: 0.5rem;
+  pointer-events: none;
+  transition: -webkit-text-stroke-color 0.6s ease;
+}
+
+#boot-screen.ar-theme:hover .ar-name-outline {
+  -webkit-text-stroke-color: rgba(0, 229, 255, 0.5); 
+}
+
+/* Draggable Name Box & Rubber Band Physics */
+.ar-drag-box {
+  margin: 0 !important; 
+  padding: 0.5rem 3rem !important; 
   border-radius: 1rem;
-  padding: 2.5rem;
-  box-shadow: 0 30px 60px rgba(0,0,0,0.5);
-  display: flex; flex-direction: column; gap: 2.5rem;
-  transition: opacity 0.4s ease, transform 0.4s ease;
+  z-index: 10;
+  /* Removed standard transform transition here so it doesn't lag while dragging */
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
-.loader-title {
-  text-align: center; font-family: var(--font-mono); font-size: 0.75rem;
-  color: var(--text-muted); letter-spacing: 0.2em;
-}
-.loader-split { display: flex; gap: 2rem; position: relative; }
-.loader-split::after {
-  content: ''; position: absolute; left: 50%; top: 0; bottom: 0;
-  width: 1px; background: rgba(255,255,255,0.05);
-}
-.loader-half { flex: 1; display: flex; flex-direction: column; gap: 1rem; }
-.it-side { text-align: left; }
-.design-side { text-align: right; align-items: flex-end; }
 
-.half-header {
-  display: flex; align-items: center; gap: 0.5rem;
-  font-size: 0.85rem; font-weight: 700; color: var(--text-secondary);
-  text-transform: uppercase; letter-spacing: 0.05em;
+/* SPRING BACK PHYSICS: This class is injected by JS when you drop the box */
+.ar-drag-box.snap-back {
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.4s, box-shadow 0.4s !important;
 }
-.it-side .half-header i { color: var(--accent-cyan); font-size: 1.25rem; }
-.design-side .half-header { flex-direction: row-reverse; }
-.design-side .half-header i { color: var(--accent); font-size: 1.25rem; }
 
-.half-body { font-size: 0.85rem; height: 1.5rem; display: flex; align-items: center; }
-.font-mono { font-family: var(--font-mono); color: var(--accent-cyan); }
-.font-sans { font-family: var(--font-sans); font-weight: 600; color: var(--purple-300); }
+.ar-drag-box:hover, .ar-drag-box.is-dragging {
+  border-color: rgba(147, 51, 234, 0.5);
+  box-shadow: 0 40px 80px rgba(147, 51, 234, 0.25), inset 0 1px 0 rgba(255,255,255,0.3);
+}
 
-.loader-progress-wrap { display: flex; flex-direction: column; gap: 1rem; align-items: center; }
-.loader-progress-bg { width: 100%; height: 4px; background: rgba(255,255,255,0.05); border-radius: 2px; overflow: hidden; }
-.loader-bar {
-  height: 100%; width: 0%;
-  background: linear-gradient(90deg, var(--accent-cyan) 0%, var(--accent) 100%);
+/* Figma Tags styling for the boot screen */
+.ar-drag-box .f-label-top { top: -20px; left: -2px; }
+.ar-drag-box .f-tag { background: var(--accent); color: #fff; }
+.ar-drag-box .f-user { background: #fff; color: #000; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+.ar-drag-box .f-anchor { border-color: rgba(255,255,255,0.2); }
+.ar-drag-box:hover .f-anchor { border-color: var(--accent-cyan); }
+
+.ar-subtitle {
+  font-family: var(--font-sans); font-size: clamp(1rem, 3vw, 1.25rem);
+  color: var(--text-secondary); margin-top: 2.5rem; font-weight: 500;
+}
+
+/* Glassmorphic Pill Button */
+.ar-btn {
+  position: absolute; bottom: 3rem;
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.6rem 0.6rem 0.6rem 1.2rem;
+  border-radius: 9999px;
+  color: #fff; font-family: var(--font-sans); font-size: 0.95rem; font-weight: 600;
+  transition: all 0.3s; cursor: pointer;
+}
+.ar-btn:hover { 
+  border-color: rgba(0, 229, 255, 0.5);
+  box-shadow: 0 10px 30px rgba(0, 229, 255, 0.2), inset 0 1px 0 rgba(255,255,255,0.3);
+  transform: translateY(-2px); 
+}
+
+/* The glowing mini orb inside the button */
+.mini-orb {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent-cyan));
+  box-shadow: 0 0 15px rgba(0, 229, 255, 0.6);
+  animation: pulse 2s infinite;
+}
+
+.ar-btn-text { position: relative; z-index: 1; }
+.ar-btn-key {
+  position: relative; z-index: 1;
+  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.1);
+  padding: 4px 8px; border-radius: 6px; font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-secondary);
+}
+
+/* 2. ORGANIC GLOWING MESH SHAPE */
+.boot-design-orb {
+  position: relative;
+  width: 90px; height: 90px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+  background: linear-gradient(135deg, var(--accent), var(--accent-cyan));
+  animation: morph 6s ease-in-out infinite;
+  box-shadow: 0 0 30px rgba(147, 51, 234, 0.3);
+  transition: box-shadow 0.4s, transform 0.4s var(--ease-cinematic);
+}
+.boot-design-orb::after {
+  content: '';
+  position: absolute; inset: 3px;
+  background: rgba(9, 9, 11, 0.85); /* Hollows out the center */
+  border-radius: inherit;
+  transition: background 0.4s;
+}
+
+@keyframes morph {
+  0% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
+  50% { border-radius: 70% 30% 30% 70% / 70% 70% 30% 30%; }
+  100% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
+}
+
+.boot-icon {
+  position: relative; z-index: 2;
+  font-size: 3.2rem;
+  color: var(--text-muted);
+  transition: color 0.4s, transform 0.4s var(--ease-cinematic);
+}
+
+/* Hover Interactions */
+#boot-screen:hover .boot-design-orb {
+  box-shadow: 0 0 50px rgba(0, 229, 255, 0.4);
+  transform: scale(1.05);
+}
+#boot-screen:hover .boot-design-orb::after { background: rgba(9, 9, 11, 0.6); }
+#boot-screen:hover .boot-icon {
+  color: #fff;
+  transform: rotate(-15deg) scale(1.1);
+}
+
+/* Typography */
+.boot-text-wrapper { display: flex; flex-direction: column; gap: 0.4rem; }
+.boot-title {
+  font-family: var(--font-mono);
+  font-size: clamp(1rem, 3vw, 1.25rem);
+  font-weight: 700;
+  color: var(--text-secondary);
+  letter-spacing: 0.1em;
+  transition: color 0.4s, text-shadow 0.4s;
+}
+#boot-screen:hover .boot-title { 
+  color: #fff; 
+  text-shadow: 0 0 15px rgba(255,255,255,0.3);
+}
+
+.boot-subtext {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: color 0.4s;
+}
+#boot-screen:hover .boot-subtext { color: var(--accent-cyan); }
+
+/* Typography */
+.boot-text-wrapper { display: flex; flex-direction: column; gap: 0.4rem; }
+
+.boot-title {
+  font-family: var(--font-mono);
+  font-size: clamp(1rem, 3vw, 1.25rem);
+  font-weight: 700;
+  color: var(--text-secondary);
+  letter-spacing: 0.1em;
+  transition: color 0.4s, text-shadow 0.4s;
+}
+#boot-screen:hover .boot-title { 
+  color: #fff; 
+  text-shadow: 0 0 15px rgba(255,255,255,0.3);
+}
+
+.boot-subtext {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: color 0.4s;
+}
+#boot-screen:hover .boot-subtext { color: var(--accent); }
+
+/* ── CINEMATIC PRELOADER ── */
+#preloader {
+  position: fixed; inset: 0; z-index: 9999;
+  background: transparent;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  pointer-events: none;
+}
+
+/* The solid background panels that split open */
+.loader-mask {
+  position: absolute; left: 0; right: 0; height: 50vh;
+  background: var(--bg-base);
+  z-index: 1;
+  transition: transform 1.2s cubic-bezier(0.77, 0, 0.175, 1);
+}
+.mask-top { top: 0; }
+.mask-bottom { bottom: 0; }
+
+/* Exit Animations */
+#preloader.exit .mask-top { transform: translateY(-100%); }
+#preloader.exit .mask-bottom { transform: translateY(100%); }
+#preloader.exit .loader-content { 
+  opacity: 0; 
+  transform: scale(1.1); 
+  filter: blur(10px); 
+}
+
+/* Foreground Content */
+.loader-content {
+  position: relative; z-index: 2;
+  display: flex; flex-direction: column; align-items: center;
+  transition: opacity 0.8s ease, transform 0.8s ease, filter 0.8s ease;
+}
+
+.loader-counter {
+  font-family: var(--font-sans);
+  font-size: clamp(5rem, 15vw, 12rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  color: #fff;
+  display: flex; align-items: flex-start;
+  text-shadow: 0 0 40px rgba(147, 51, 234, 0.3);
+}
+.loader-sym {
+  font-size: clamp(1.5rem, 4vw, 3rem);
+  color: var(--accent);
+  margin-top: clamp(0.5rem, 2vw, 1.5rem);
+  font-family: var(--font-mono);
+}
+
+.loader-logs {
+  font-family: var(--font-mono);
+  font-size: clamp(0.7rem, 2vw, 0.85rem);
+  color: var(--text-secondary);
+  margin-top: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  height: 1.5rem;
+  overflow: hidden;
+  text-align: center;
+}
+
+.loader-progress-container {
+  width: 200px;
+  height: 2px;
+  background: rgba(255,255,255,0.1);
+  margin-top: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+.loader-progress-bar {
+  position: absolute; left: 0; top: 0; bottom: 0; width: 0%;
+  background: linear-gradient(90deg, var(--accent-cyan), var(--accent));
   transition: width 0.1s linear;
 }
-#loader-pct { font-family: var(--font-mono); font-size: 1.2rem; font-weight: 700; color: #fff; }
 
-#preloader-logo {
-  position: absolute; inset: 0; display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 0.5rem;
-  animation: scaleUpFade 0.6s cubic-bezier(0.16,1,0.3,1) forwards;
-}
-#preloader-logo .logo-text { font-size: clamp(2.5rem, 8vw, 4.5rem); font-weight: 800; letter-spacing: -0.03em; }
-.logo-sub { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-secondary); letter-spacing: 0.1em; text-transform: uppercase; }
-
-@keyframes scaleUpFade {
-  0% { opacity: 0; transform: scale(0.9); }
-  100% { opacity: 1; transform: scale(1); }
-}
+/* Light Theme Overrides */
+[data-theme="light"] .loader-mask { background: var(--bg-base); }
+[data-theme="light"] .loader-counter { color: var(--text-primary); text-shadow: none; }
+[data-theme="light"] .loader-progress-container { background: rgba(126,34,206,0.1); }
 
 @media (max-width: 480px) {
   .loader-split { flex-direction: column; gap: 1.5rem; }
@@ -1499,16 +1757,35 @@ img { display: block; max-width: 100%; }
 
 [data-theme="light"] .footer-links a:hover, [data-theme="light"] .footer-links span:hover { color: var(--accent); }
 
-/* Light Theme: Portrait Window Overrides */
-[data-theme="light"] .portrait-card { 
-  background: #ffffff;
-  border-color: rgba(126, 34, 206, 0.15); 
-  box-shadow: 0 10px 40px rgba(126, 34, 206, 0.08); 
+/* Light Theme: Tech Portrait Overrides */
+[data-theme="light"] .portrait-tech-wrapper { background: rgba(126, 34, 206, 0.03); border-color: rgba(126, 34, 206, 0.2); box-shadow: 0 10px 40px rgba(126, 34, 206, 0.05); }
+[data-theme="light"] .portrait-tech-wrapper:hover { box-shadow: 0 20px 40px rgba(126, 34, 206, 0.15); }
+[data-theme="light"] .portrait-image-container { border-color: rgba(126, 34, 206, 0.15); }
+[data-theme="light"] .tech-label { background: #fff; border-color: var(--accent); color: var(--text-primary); }
+[data-theme="light"] .crosshair { border-color: rgba(2, 132, 199, 0.3); }
+[data-theme="light"] .crosshair::before, [data-theme="light"] .crosshair::after { background: rgba(2, 132, 199, 0.5); }
+[data-theme="light"] .portrait-scanner { background: #0284c7; box-shadow: 0 0 20px 5px rgba(2, 132, 199, 0.2); }
+
+/* Light Theme: Hybrid Boot Screen Overrides */
+[data-theme="light"] #boot-screen.ar-theme { background: var(--bg-base); }
+[data-theme="light"] .boot-overlay-grid { 
+  background-image: 
+    linear-gradient(to right, rgba(126, 34, 206, 0.05) 1px, transparent 1px), 
+    linear-gradient(to bottom, rgba(126, 34, 206, 0.05) 1px, transparent 1px); 
 }
-[data-theme="light"] .portrait-card:hover { 
-  border-color: rgba(126, 34, 206, 0.3); 
-  box-shadow: 0 20px 50px rgba(126, 34, 206, 0.15); 
+[data-theme="light"] .boot-box { 
+  background: 
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.12'/%3E%3C/svg%3E"),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.4));
+  border-color: rgba(126, 34, 206, 0.2);
 }
+[data-theme="light"] .ar-name-solid { color: var(--text-primary); text-shadow: none; }
+[data-theme="light"] .ar-subtitle { color: var(--text-secondary); }
+[data-theme="light"] .ar-btn { color: var(--text-primary); }
+[data-theme="light"] .ar-btn-key { background: rgba(126,34,206,0.05); border-color: rgba(126,34,206,0.1); color: var(--text-secondary); }
+[data-theme="light"] .ar-drag-box .f-anchor { border-color: rgba(126,34,206,0.3); background: #fff; }
+[data-theme="light"] .ar-drag-box:hover .f-anchor { border-color: rgba(2, 132, 199, 0.6); }
+
 
 /* ── SHARED PROJECT PAGE STYLES ── */
 .project-page {
@@ -1762,14 +2039,13 @@ img { display: block; max-width: 100%; }
   --ease-cinematic: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* 1. Cinematic Film Grain Overlay (Tactile Texture) */
 body::after {
   content: "";
   position: fixed;
   inset: 0;
   z-index: 9999;
   pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
 }
 /* Darken noise slightly for light mode */
 [data-theme="light"] body::after { opacity: 0.02; filter: invert(1); }
@@ -2047,4 +2323,60 @@ body::after {
 }
 [data-theme="light"] .g-img-placeholder {
   background: rgba(0,0,0,0.02);
+}
+
+/* ============================================================
+   LOADING SCREEN TEXTURE & PURPLE INTEGRATION
+   ============================================================ */
+
+/* Applies the film grain noise strictly to the preloader background panels */
+.loader-mask::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.12'/%3E%3C/svg%3E");
+  z-index: 0;
+}
+
+/* Enhances the % symbol to match the vivid purple and glow from the reference image */
+.loader-sym {
+  color: #b066ff;
+  text-shadow: 0 0 15px rgba(176, 102, 255, 0.6);
+}
+
+/* Widens and intensifies the ambient purple glow behind the 100% text */
+.loader-counter {
+  text-shadow: 0 0 60px rgba(147, 51, 234, 0.4);
+}
+
+/* ============================================================
+   START PAGE TEXTURE (Boot Screen Heavy Noise)
+   ============================================================ */
+#boot-screen.ar-theme::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.12'/%3E%3C/svg%3E");
+  z-index: 9999; 
+}
+
+/* ============================================================
+   TEXTURE OVERRIDES (SOFTENED)
+   ============================================================ */
+
+/* 1. Overall Site Grain (Very Subtle) */
+body::after {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E") !important;
+}
+
+/* 2. Start Page / Boot Screen Grain */
+#boot-screen.ar-theme::after {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E") !important;
+}
+
+/* 3. Cinematic Loading Panels Grain */
+.loader-mask::before {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E") !important;
 }
