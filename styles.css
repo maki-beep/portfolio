@@ -2380,3 +2380,25 @@ body::after {
 .loader-mask::before {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E") !important;
 }
+
+/* ============================================================
+   START PAGE NAME HOVER EFFECT (SITE PURPLE MATCH & WHITE TEXT)
+   ============================================================ */
+.ar-name-solid {
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), 
+              text-shadow 0.6s ease, 
+              letter-spacing 0.6s ease;
+}
+
+.ar-name-solid:hover {
+  transform: scale(1.03);
+  letter-spacing: 0.02em;
+  color: #fff; /* Keeps the text cleanly white */
+  text-shadow: 0 0 50px rgba(147, 51, 234, 0.5) !important; /* Matches your site's signature purple glow and balanced intensity */
+}
+
+/* Light Theme Override */
+[data-theme="light"] .ar-name-solid:hover {
+  color: var(--text-primary);
+  text-shadow: 0 0 30px rgba(126, 34, 206, 0.25) !important;
+}
