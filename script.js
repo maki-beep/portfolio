@@ -601,11 +601,28 @@ function triggerHeroAnimations() {
 
   tabBtns.forEach(btn => {
     btn.addEventListener('click', () => {
+      // Don't do anything if clicking the already active tab
+      if (btn.classList.contains('active')) return;
+
+      const targetId = 'tab-' + btn.dataset.tab;
+      const currentActive = document.querySelector('.tab-panel.active');
+      const nextActive = document.getElementById(targetId);
+
+      // Update button states
       tabBtns.forEach(b => b.classList.remove('active'));
-      tabPanels.forEach(p => p.classList.remove('active'));
       btn.classList.add('active');
-      const target = document.getElementById('tab-' + btn.dataset.tab);
-      if (target) target.classList.add('active');
+
+      // Animate out the current tab, then animate in the new one
+      if (currentActive) {
+        currentActive.classList.add('fade-out');
+        
+        setTimeout(() => {
+          currentActive.classList.remove('active', 'fade-out');
+          if (nextActive) nextActive.classList.add('active');
+        }, 300); // Matches the CSS exit animation duration
+      } else {
+        if (nextActive) nextActive.classList.add('active');
+      }
     });
   });
 
