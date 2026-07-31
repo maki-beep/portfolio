@@ -464,21 +464,61 @@ function triggerHeroAnimations() {
 
 
 /* ══════════════════════════════════════
-   12. SCROLL REVEAL
+   10. SCROLL REVEAL & FIGMA TYPING
 ══════════════════════════════════════ */
-(function ScrollReveal() {
+(function ScrollRevealAndType() {
   const revealEls = document.querySelectorAll('.reveal');
 
+  // Reusable HTML Typing Engine
+  function typeHTML(elementId, fullText, speed = 50) {
+    const el = document.getElementById(elementId);
+    if (!el || el.getAttribute('data-typed') === 'true') return;
+    el.setAttribute('data-typed', 'true'); // Prevent it from typing twice
+    
+    if (PREFERS_REDUCED_MOTION) {
+      el.innerHTML = fullText;
+      return;
+    }
+    
+    let idx = 0;
+    let isTag = false;
+    function type() {
+      const char = fullText.charAt(idx);
+      if (char === '<') isTag = true;
+      if (char === '>') isTag = false;
+      
+      idx++;
+      el.innerHTML = fullText.slice(0, idx);
+      
+      if (idx < fullText.length) {
+        setTimeout(type, isTag ? 0 : speed);
+      }
+    }
+    setTimeout(type, 400); // Wait for the blur reveal to finish before typing
+  }
+
+  // If user prefers no motion, just reveal everything instantly
   if (PREFERS_REDUCED_MOTION) {
     revealEls.forEach(el => el.classList.add('visible'));
+    typeHTML('about-title-type', "About <span class='f-highlight'>System</span>");
+    typeHTML('project-title-type', "Project <span class='f-highlight'>Directory</span>");
     return;
   }
 
+  // Trigger animations when scrolled into view
   const io = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         entry.target.classList.add('visible');
         io.unobserve(entry.target);
+        
+        // If this section contains our Figma boxes, trigger the typing!
+        if (entry.target.querySelector('#about-title-type')) {
+          typeHTML('about-title-type', "About <span class='f-highlight'>System</span>", 50);
+        }
+        if (entry.target.querySelector('#project-title-type')) {
+          typeHTML('project-title-type', "Project <span class='f-highlight'>Directory</span>", 50);
+        }
       }
     });
   }, { threshold: 0.1, rootMargin: '-60px' });

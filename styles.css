@@ -1806,6 +1806,12 @@ body::after {
   background: transparent;
 }
 
+/* Add this below .figma-edit-box */
+.figma-edit-box.center-box {
+  margin-left: auto;
+  margin-right: auto;
+}
+
 /* Corner Anchors */
 .f-anchor {
   position: absolute;
