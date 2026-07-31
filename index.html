@@ -374,23 +374,26 @@
             </div>
             <p style="margin-top: 1rem;">A split view of logical architectures and visual identities.</p>
           </div>
+          
+          <!-- 2-Tab Switcher -->
           <div class="tab-switcher">
-            <button class="tab-btn active" data-tab="IT">IT Projects</button>
+            <button class="tab-btn active" data-tab="IT">IT & UI/UX</button>
             <button class="tab-btn" data-tab="GD">Graphic Design</button>
           </div>
         </div>
 
-        <!-- IT Projects Tab -->
+        <!-- 1. IT & UI/UX Combined Tab -->
         <div id="tab-IT" class="tab-panel active">
           <div class="it-projects">
 
-            <!-- IT Project 1 -->
+            <!-- Combined Project 1 -->
             <div class="it-project">
               <div class="it-info">
                 <div class="project-num">01</div>
                 <h3>puptask</h3>
                 <p>A prototype delivery system designed specifically for logistics and routing throughout the campus area.</p>
-                <div class="tag-row"><span class="tag">Logistics</span><span class="tag">System Design</span></div>
+                <div class="tag-row"><span class="tag">Logistics</span><span class="tag">System Arch</span><span class="tag">UI/UX</span></div>
+                <a href="project.html" class="btn-ghost" style="padding: 0.6rem 1.5rem; font-size: 0.8rem; margin-top: 0.5rem; width: fit-content;" data-cursor="VIEW">View UI Case Study</a>
               </div>
               <div class="code-window tilt-card" data-output="> Running delivery.js...&#10;[SUCCESS] Route calculated: Main Campus -&gt; CEA (Distance: 450m)&#10;[LOG] Order #1042 dispatched cleanly!">
                 <div class="code-bar">
@@ -408,17 +411,18 @@
   }
 }</code></pre>
                 </div>
-                <div class="code-console"><span class="console-placeholder">> Status: Ready to execute. Click Run.</span></div>
+                <div class="code-console"><span class="console-placeholder">> Status: Ready to execute. Click Run for Arch.</span></div>
               </div>
             </div>
 
-            <!-- IT Project 2 -->
+            <!-- Combined Project 2 -->
             <div class="it-project reverse">
               <div class="it-info">
                 <div class="project-num">02</div>
                 <h3>Altura-579</h3>
                 <p>Project proposal and UI outline for a smart health community tracking application.</p>
-                <div class="tag-row"><span class="tag">Health Tech</span><span class="tag">Prototyping</span></div>
+                <div class="tag-row"><span class="tag">Health Tech</span><span class="tag">System Arch</span><span class="tag">UI/UX</span></div>
+                <a href="project.html" class="btn-ghost" style="padding: 0.6rem 1.5rem; font-size: 0.8rem; margin-top: 0.5rem; width: fit-content;" data-cursor="VIEW">View UI Case Study</a>
               </div>
               <div class="code-window tilt-card" data-output="> Running vitals.js...&#10;[ANALYZING] Heart Rate: 78 BPM | Steps: 8,420&#10;[STATUS] Health status: STABLE (Normal Range)">
                 <div class="code-bar">
@@ -433,17 +437,18 @@
   <span class="code-kw">return</span> <span class="code-var">heartRate</span> &lt; <span class="code-num">100</span> ? <span class="code-str">'stable'</span> : <span class="code-str">'flag'</span>;
 };</code></pre>
                 </div>
-                <div class="code-console"><span class="console-placeholder">> Status: Ready to execute. Click Run.</span></div>
+                <div class="code-console"><span class="console-placeholder">> Status: Ready to execute. Click Run for Arch.</span></div>
               </div>
             </div>
 
-            <!-- IT Project 3 -->
+            <!-- Combined Project 3 -->
             <div class="it-project">
               <div class="it-info">
                 <div class="project-num">03</div>
                 <h3>iSkout</h3>
                 <p>A comprehensive business directory system mapping out services, food, and businesses around PUP campuses.</p>
-                <div class="tag-row"><span class="tag">Directory</span><span class="tag">System Arch</span></div>
+                <div class="tag-row"><span class="tag">Directory</span><span class="tag">System Arch</span><span class="tag">UI/UX</span></div>
+                <a href="project.html" class="btn-ghost" style="padding: 0.6rem 1.5rem; font-size: 0.8rem; margin-top: 0.5rem; width: fit-content;" data-cursor="VIEW">View UI Case Study</a>
               </div>
               <div class="code-window tilt-card" data-output="> Executing directory.sql...&#10;[SQL] Fetching local PUP food stalls...&#10;[RESULTS] 12 businesses returned. Sorted by distance (ASC).">
                 <div class="code-bar">
@@ -459,56 +464,46 @@
 <span class="code-kw">ORDER BY</span> distance <span class="code-kw">ASC</span>;
 <span class="code-comment">-- returns nearest local stalls</span></code></pre>
                 </div>
-                <div class="code-console"><span class="console-placeholder">> Status: Ready to execute. Click Run.</span></div>
+                <div class="code-console"><span class="console-placeholder">> Status: Ready to execute. Click Run for Arch.</span></div>
               </div>
             </div>
 
           </div>
         </div>
 
-        <!-- Graphic Design Tab -->
+        <!-- 2. Graphic Design Tab (Visual Only) -->
         <div id="tab-GD" class="tab-panel">
-
           <div class="gd-filters">
             <button class="filter-btn active" data-filter="All">All</button>
             <button class="filter-btn" data-filter="Logo">Logo</button>
             <button class="filter-btn" data-filter="Social Media">Social Media</button>
             <button class="filter-btn" data-filter="Pubmats">Pubmats</button>
-            <button class="filter-btn" data-filter="UI/UX">UI/UX</button>
           </div>
 
           <div class="gd-grid">
-  <a href="project.html" class="gd-card tilt-card" data-cat="Logo" data-cursor="VIEW">
-    <div class="gd-card-bar"><div class="mac-dots purple"><span></span><span></span><span></span></div><div class="mac-title">gdg-logo.ai</div></div>
-    <div class="gd-preview Logo"><div class="gd-shape"><div class="logo-outer"><div class="logo-inner"></div></div></div><div class="gd-hover-overlay"><span>View Project</span></div></div>
-    <div class="gd-info"><div class="gd-title">GDG Chapter Identity</div><div class="gd-cat">Logo</div></div>
-  </a>
-  <a href="project.html" class="gd-card tilt-card" data-cat="Pubmats" data-cursor="VIEW">
-    <div class="gd-card-bar"><div class="mac-dots purple"><span></span><span></span><span></span></div><div class="mac-title">conference.psd</div></div>
-    <div class="gd-preview Pubmats"><div class="gd-shape"><div class="pub-bars"><div></div><div></div><div></div></div></div><div class="gd-hover-overlay"><span>View Project</span></div></div>
-    <div class="gd-info"><div class="gd-title">Tech Conference</div><div class="gd-cat">Pubmats</div></div>
-  </a>
-  <a href="project.html" class="gd-card tilt-card" data-cat="UI/UX" data-cursor="VIEW">
-    <div class="gd-card-bar"><div class="mac-dots purple"><span></span><span></span><span></span></div><div class="mac-title">altura-ui.fig</div></div>
-    <div class="gd-preview UIUX"><div class="gd-shape"><div class="ui-mock"></div></div><div class="gd-hover-overlay"><span>View Project</span></div></div>
-    <div class="gd-info"><div class="gd-title">Altura Mobile Interface</div><div class="gd-cat">UI/UX</div></div>
-  </a>
-  <a href="project.html" class="gd-card tilt-card" data-cat="Social Media" data-cursor="VIEW">
-    <div class="gd-card-bar"><div class="mac-dots purple"><span></span><span></span><span></span></div><div class="mac-title">campaign-post.psd</div></div>
-    <div class="gd-preview Social"><div class="gd-shape"><div class="social-card"><div class="social-avatar"></div></div></div><div class="gd-hover-overlay"><span>View Project</span></div></div>
-    <div class="gd-info"><div class="gd-title">Agency Campaign</div><div class="gd-cat">Social Media</div></div>
-  </a>
-  <a href="project.html" class="gd-card tilt-card" data-cat="Pubmats" data-cursor="VIEW">
-    <div class="gd-card-bar"><div class="mac-dots purple"><span></span><span></span><span></span></div><div class="mac-title">recruitment.ai</div></div>
-    <div class="gd-preview Pubmats"><div class="gd-shape"><div class="pub-bars"><div></div><div></div><div></div></div></div><div class="gd-hover-overlay"><span>View Project</span></div></div>
-    <div class="gd-info"><div class="gd-title">Campus Recruitment</div><div class="gd-cat">Pubmats</div></div>
-  </a>
-  <a href="project.html" class="gd-card tilt-card" data-cat="UI/UX" data-cursor="VIEW">
-    <div class="gd-card-bar"><div class="mac-dots purple"><span></span><span></span><span></span></div><div class="mac-title">iskout-app.fig</div></div>
-    <div class="gd-preview UIUX"><div class="gd-shape"><div class="ui-mock"></div></div><div class="gd-hover-overlay"><span>View Project</span></div></div>
-    <div class="gd-info"><div class="gd-title">Directory Web App</div><div class="gd-cat">UI/UX</div></div>
-  </a>
-</div>
+            <div class="gd-card tilt-card" data-cat="Logo">
+              <div class="gd-card-bar"><div class="mac-dots purple"><span></span><span></span><span></span></div><div class="mac-title">gdg-logo.ai</div></div>
+              <div class="gd-preview Logo"><div class="gd-shape"><div class="logo-outer"><div class="logo-inner"></div></div></div></div>
+              <div class="gd-info"><div class="gd-title">GDG Chapter Identity</div><div class="gd-cat">Logo</div></div>
+            </div>
+
+            <div class="gd-card tilt-card" data-cat="Pubmats">
+              <div class="gd-card-bar"><div class="mac-dots purple"><span></span><span></span><span></span></div><div class="mac-title">conference.psd</div></div>
+              <div class="gd-preview Pubmats"><div class="gd-shape"><div class="pub-bars"><div></div><div></div><div></div></div></div></div>
+              <div class="gd-info"><div class="gd-title">Tech Conference</div><div class="gd-cat">Pubmats</div></div>
+            </div>
+
+            <div class="gd-card tilt-card" data-cat="Social Media">
+              <div class="gd-card-bar"><div class="mac-dots purple"><span></span><span></span><span></span></div><div class="mac-title">campaign-post.psd</div></div>
+              <div class="gd-preview Social"><div class="gd-shape"><div class="social-card"><div class="social-avatar"></div></div></div></div>
+              <div class="gd-info"><div class="gd-title">Agency Campaign</div><div class="gd-cat">Social Media</div></div>
+            </div>
+
+            <div class="gd-card tilt-card" data-cat="Pubmats">
+              <div class="gd-card-bar"><div class="mac-dots purple"><span></span><span></span><span></span></div><div class="mac-title">recruitment.ai</div></div>
+              <div class="gd-preview Pubmats"><div class="gd-shape"><div class="pub-bars"><div></div><div></div><div></div></div></div></div>
+              <div class="gd-info"><div class="gd-title">Campus Recruitment</div><div class="gd-cat">Pubmats</div></div>
+            </div>
           </div>
         </div>
 

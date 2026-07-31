@@ -108,27 +108,28 @@ const PREFERS_REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduc
 ══════════════════════════════════════ */
 function triggerHeroAnimations() {
   // Grab whichever title exists on the current page
-  const titleEl = document.getElementById('hero-title-type');
-  const gdTitleEl = document.getElementById('gd-project-title');
-  const sysTitleEl = document.getElementById('sys-project-title');
+  const titleEl = document.getElementById('hero-title-type') || 
+                  document.getElementById('gd-project-title') || 
+                  document.getElementById('sys-project-title');
 
   if (PREFERS_REDUCED_MOTION) {
     document.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'));
-    if (titleEl) titleEl.innerHTML = "Mikael Santino <br/><span class='f-highlight'>Pineda.</span>";
-    if (gdTitleEl) gdTitleEl.innerHTML = "GDG Chapter <span class='f-highlight'>Identity</span>";
-    if (sysTitleEl) sysTitleEl.innerHTML = "puptask <span class='f-highlight'>System</span>";
+    if (titleEl && titleEl.dataset.text) {
+      titleEl.innerHTML = titleEl.dataset.text;
+    }
     return;
   }
 
-  // Trigger standard scroll reveals that are visible on load
+  // Trigger standard reveals
   document.querySelectorAll('.reveal').forEach((el, i) => {
     setTimeout(() => el.classList.add('visible'), 50 + i * 150);
   });
 
-  // Reusable function to handle typing logic
-  function typeTarget(el, fullText, speed = 50) {
-    if (!el) return; // If the element isn't on this page, do nothing
+  // Reusable function to handle typing logic based on data-text
+  function typeTarget(el, speed = 50) {
+    if (!el || !el.dataset.text) return; 
     
+    const fullText = el.dataset.text;
     let idx = 0;
     let isTag = false;
     
@@ -145,16 +146,12 @@ function triggerHeroAnimations() {
       }
     }
     
-    // Wait for the blur/slide-up reveal to finish before starting to type
     setTimeout(type, 400);
   }
 
-  // Execute typing for whichever element is actually on the page
-  typeTarget(titleEl, "Mikael Santino <br/><span class='f-highlight'>Pineda.</span>", 50);
-  typeTarget(gdTitleEl, "GDG Chapter <span class='f-highlight'>Identity</span>", 50);
-  typeTarget(sysTitleEl, "puptask <span class='f-highlight'>System</span>", 50);
+  // Execute typing 
+  typeTarget(titleEl, 50);
 }
-
 
 /* ══════════════════════════════════════
    3. CUSTOM CURSOR & INFINITE CANVAS DRAG
