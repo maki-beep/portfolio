@@ -244,7 +244,7 @@ function triggerHeroAnimations() {
   // Infinite Canvas Drag Mechanics
   window.addEventListener('mousedown', e => {
     // Prevent dragging when clicking on cards, buttons, or inputs
-    if (e.target.closest('a, button, input, textarea, .bento-card, .it-project, .gd-card, .contact-card, .feature-card')) return;
+    if (e.target.closest('a, button, input, textarea, .bento-card, .it-project, .gd-card, .contact-card, .feature-card, #gallery-viewport')) return;
     
     isDragging = true;
     startDragX = e.clientX - tgtCanvasX;
@@ -931,5 +931,82 @@ function triggerHeroAnimations() {
         box.style.transform = `translate3d(${currentX}px, ${currentY}px, 0) scale(1.05)`;
       }
     }
+  });
+})();
+
+/* ══════════════════════════════════════
+   20. 2D DRAGGABLE GALLERY (Drag-to-Scroll)
+══════════════════════════════════════ */
+(function DraggableGallery() {
+  const viewport = document.getElementById('gallery-viewport');
+  if (!viewport) return;
+
+  let isDown = false;
+  let startX;
+  let startY;
+  let scrollLeft;
+  let scrollTop;
+
+  // Center the gallery on load so the user starts in the middle of the grid
+  setTimeout(() => {
+    viewport.scrollLeft = (viewport.scrollWidth - viewport.clientWidth) / 2;
+    viewport.scrollTop = (viewport.scrollHeight - viewport.clientHeight) / 2;
+  }, 100);
+
+  viewport.addEventListener('mousedown', (e) => {
+    isDown = true;
+    viewport.classList.add('active');
+    
+    // Connect to your custom cursor
+    const ring = document.getElementById('cursor-ring');
+    const lbl = document.getElementById('cursor-label');
+    if (ring && lbl) {
+      ring.classList.add('dragging');
+      lbl.textContent = 'DRAG';
+    }
+
+    startX = e.pageX - viewport.offsetLeft;
+    startY = e.pageY - viewport.offsetTop;
+    scrollLeft = viewport.scrollLeft;
+    scrollTop = viewport.scrollTop;
+  });
+
+  viewport.addEventListener('mouseleave', () => {
+    isDown = false;
+    viewport.classList.remove('active');
+    
+    // Safety check to reset cursor if they drag out of bounds
+    const ring = document.getElementById('cursor-ring');
+    const lbl = document.getElementById('cursor-label');
+    if (ring && lbl && ring.classList.contains('dragging')) {
+      ring.classList.remove('dragging');
+      lbl.textContent = '';
+    }
+  });
+
+  viewport.addEventListener('mouseup', () => {
+    isDown = false;
+    viewport.classList.remove('active');
+    
+    const ring = document.getElementById('cursor-ring');
+    const lbl = document.getElementById('cursor-label');
+    if (ring && lbl) {
+      ring.classList.remove('dragging');
+      lbl.textContent = '';
+    }
+  });
+
+  viewport.addEventListener('mousemove', (e) => {
+    if (!isDown) return;
+    e.preventDefault(); // Prevents accidental text/image selection
+    
+    const x = e.pageX - viewport.offsetLeft;
+    const y = e.pageY - viewport.offsetTop;
+    
+    const walkX = (x - startX) * 1.5; // Multiplier adjusts drag speed
+    const walkY = (y - startY) * 1.5;
+    
+    viewport.scrollLeft = scrollLeft - walkX;
+    viewport.scrollTop = scrollTop - walkY;
   });
 })();

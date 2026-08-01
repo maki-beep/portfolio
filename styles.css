@@ -2402,3 +2402,69 @@ body::after {
   color: var(--text-primary);
   text-shadow: 0 0 30px rgba(126, 34, 206, 0.25) !important;
 }
+
+/* ============================================================
+   INFINITE MARQUEE DIVIDER
+   ============================================================ */
+.marquee-divider {
+  width: 100%;
+  overflow: hidden;
+  background: rgba(147, 51, 234, 0.05); /* Slightly richer purple tint */
+  border-top: 1px solid rgba(147, 51, 234, 0.8); /* Solid purple line */
+  border-bottom: 1px solid rgba(147, 51, 234, 0.8);
+  /* Adds the outer and inner purple glow! */
+  box-shadow: 0 0 20px rgba(147, 51, 234, 0.5), inset 0 0 10px rgba(147, 51, 234, 0.2); 
+  padding: 0.5rem 0; 
+  margin: 4rem 0; 
+  display: flex;
+  align-items: center;
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  /* Adjust the '25s' to make the scroll faster or slower */
+  animation: marqueeScroll 25s linear infinite; 
+}
+
+/* Optional: Pauses the scrolling when the user hovers over it */
+.marquee-divider:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+.marquee-content {
+  display: flex;
+}
+
+.marquee-content span {
+  font-family: var(--font-mono);
+  font-size: 0.75rem; 
+  font-weight: 600;
+  color: var(--text-secondary);
+  letter-spacing: 0.15em;
+  padding-right: 0; /* Removed padding so the bars align seamlessly */
+  white-space: nowrap;
+  transition: color 0.3s, text-shadow 0.3s;
+}
+
+.marquee-divider:hover .marquee-content span {
+  color: var(--accent); /* Lights up purple on hover */
+}
+
+/* The actual infinite loop math */
+@keyframes marqueeScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); } 
+}
+
+/* Light Theme Overrides */
+[data-theme="light"] .marquee-divider {
+  background: rgba(126, 34, 206, 0.03);
+  border-color: rgba(126, 34, 206, 0.15);
+}
+[data-theme="light"] .marquee-content span {
+  color: var(--text-muted);
+}
+[data-theme="light"] .marquee-divider:hover .marquee-content span {
+  color: var(--accent);
+}
