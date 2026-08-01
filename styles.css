@@ -79,48 +79,43 @@ img { display: block; max-width: 100%; }
 }
 
 /* ── Custom Cursor ── */
-#cursor-dot {
-  position: fixed;
-  top: 0; left: 0;
-  width: 8px; height: 8px;
-  background: var(--accent);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 9998;
-  transform: translate(-50%, -50%);
-  transition: opacity 0.3s;
-}
 #cursor-ring {
   position: fixed;
   top: 0; left: 0;
-  width: 36px; height: 36px;
-  border: 1.5px solid var(--text-muted);
-  border-radius: 50%;
   pointer-events: none;
-  z-index: 9997;
-  transform: translate(-50%, -50%);
-  display: flex; align-items: center; justify-content: center;
-  transition: width 0.25s ease, height 0.25s ease, background 0.25s ease, border-color 0.25s ease;
+  z-index: 10001; /* Brings cursor above the boot screen */
+  display: flex;
+  align-items: flex-start;
 }
 #cursor-ring.hovering {
-  width: 60px; height: 60px;
-  background: rgba(147,51,234,0.25);
-  border-color: var(--accent);
-  backdrop-filter: blur(4px);
+  filter: drop-shadow(0 4px 12px rgba(147,51,234,0.4));
+}
+#cursor-ring svg {
+  transform: rotate(-15deg);
 }
 #cursor-label {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  background: var(--accent);
   color: #fff;
-  opacity: 0;
-  transition: opacity 0.2s;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  border-top-left-radius: 0;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  white-space: nowrap;
+  transition: background 0.2s, color 0.2s;
 }
-#cursor-ring.hovering #cursor-label { opacity: 1; }
-
+#cursor-ring.hovering #cursor-label {
+  background: #fff;
+  color: #000;
+}
+#cursor-ring.dragging #cursor-label {
+  background: var(--accent-cyan);
+  color: #000;
+}
 @media (pointer: coarse) {
-  #cursor-dot, #cursor-ring { display: none; }
+  #cursor-ring { display: none; }
   body { cursor: auto; }
   a, button { cursor: pointer; }
 }
@@ -170,7 +165,7 @@ img { display: block; max-width: 100%; }
   position: fixed; inset: 0; z-index: 10000;
   background: var(--bg-base);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  cursor: default;
+  cursor: none; /* Disables default system cursor */
   transition: opacity 0.8s var(--ease-cinematic), transform 0.8s var(--ease-cinematic), filter 0.8s var(--ease-cinematic);
 }
 
@@ -2082,17 +2077,7 @@ body::after {
   border-color: rgba(109, 40, 217, 0.3);
 }
 
-/* 4. Canvas Dragging Cursor State */
-#cursor-ring {
-  transition: width 0.3s var(--ease-cinematic), height 0.3s var(--ease-cinematic), background 0.3s var(--ease-cinematic), border-color 0.3s ease;
-}
-#cursor-ring.dragging {
-  width: 80px; height: 80px;
-  background: rgba(0, 229, 255, 0.1);
-  border-color: rgba(0, 229, 255, 0.5);
-  backdrop-filter: blur(8px);
-}
-#cursor-ring.dragging #cursor-label { opacity: 1; }
+/* 4. Canvas Dragging Cursor State (Removed for Figma Cursor) */
 
 /* Fix grid bounds so it doesn't run out of edge space when dragged */
 #bg-grid {
@@ -2254,8 +2239,8 @@ body::after {
   min-height: 500px;
   max-height: 800px;
   overflow: auto; 
-  cursor: grab;
-  padding: 0; /* Padding removed from viewport so cards touch the edges */
+  cursor: none; /* Removes the open hand */
+  padding: 0; 
   scrollbar-width: none; 
   -ms-overflow-style: none;
 }
@@ -2263,7 +2248,7 @@ body::after {
   display: none;
 }
 .gallery-viewport.active {
-  cursor: grabbing;
+  cursor: none; /* Removes the grabbing hand */
 }
 
 /* 3. The Track */
@@ -2467,4 +2452,9 @@ body::after {
 }
 [data-theme="light"] .marquee-divider:hover .marquee-content span {
   color: var(--accent);
+}
+
+.f-user,
+.f-label-bottom {
+  display: none !important;
 }

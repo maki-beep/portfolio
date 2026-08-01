@@ -116,7 +116,7 @@ function startPreloader() {
     const lbl = document.getElementById('cursor-label');
     if (ring && lbl) {
       ring.classList.add('hovering');
-      lbl.textContent = 'CREATE';
+      lbl.textContent = 'You';
     }
   });
 
@@ -129,7 +129,7 @@ function startPreloader() {
       const lbl = document.getElementById('cursor-label');
       if (ring && lbl) {
         ring.classList.remove('hovering');
-        lbl.textContent = '';
+        lbl.textContent = 'You';
       }
 
       // Trigger exit animation
@@ -201,17 +201,15 @@ function triggerHeroAnimations() {
 (function CustomCursorAndCanvas() {
   if (PREFERS_REDUCED_MOTION || window.matchMedia('(pointer: coarse)').matches) return;
 
-  const dot  = document.getElementById('cursor-dot');
   const ring = document.getElementById('cursor-ring');
   const lbl  = document.getElementById('cursor-label');
   const grid = document.getElementById('bg-grid');
   const glowTL = document.getElementById('bg-glow-tl');
   const glowBR = document.getElementById('bg-glow-br');
   
-  if (!dot || !ring || !lbl) return;
+  if (!ring || !lbl) return;
 
   const mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-  const dPos  = { x: mouse.x, y: mouse.y };
   const rPos  = { x: mouse.x, y: mouse.y };
   
   let canvasX = 0, canvasY = 0;
@@ -219,11 +217,12 @@ function triggerHeroAnimations() {
   let isDragging = false;
   let startDragX = 0, startDragY = 0;
 
+  lbl.textContent = 'You';
+
   window.addEventListener('mousemove', e => {
     mouse.x = e.clientX;
     mouse.y = e.clientY;
     
-    // Calculate how far the mouse has dragged
     if (isDragging) {
       tgtCanvasX = e.clientX - startDragX;
       tgtCanvasY = e.clientY - startDragY;
@@ -234,16 +233,14 @@ function triggerHeroAnimations() {
     const target = e.target.closest('a, button, input, textarea, [data-cursor]');
     if (target) {
       ring.classList.add('hovering');
-      lbl.textContent = target.getAttribute('data-cursor') || '';
+      lbl.textContent = target.getAttribute('data-cursor') || 'CLICK';
     } else if (!isDragging) {
       ring.classList.remove('hovering');
-      lbl.textContent = '';
+      lbl.textContent = 'You';
     }
   });
 
-  // Infinite Canvas Drag Mechanics
   window.addEventListener('mousedown', e => {
-    // Prevent dragging when clicking on cards, buttons, or inputs
     if (e.target.closest('a, button, input, textarea, .bento-card, .it-project, .gd-card, .contact-card, .feature-card, #gallery-viewport')) return;
     
     isDragging = true;
@@ -251,33 +248,27 @@ function triggerHeroAnimations() {
     startDragY = e.clientY - tgtCanvasY;
     
     ring.classList.add('dragging');
-    lbl.textContent = 'DRAG';
-    document.body.style.cursor = 'grabbing';
+    lbl.textContent = 'You';
+   /* cursor grab removed */
   });
 
   window.addEventListener('mouseup', e => {
     isDragging = false;
     ring.classList.remove('dragging');
-    document.body.style.cursor = 'none';
+    /* cursor none removed */
     
     if(!e.target.closest('[data-cursor], a, button')) {
        ring.classList.remove('hovering');
-       lbl.textContent = '';
+       lbl.textContent = 'You';
     }
   });
 
-  // Main Render Loop for Cursor and Canvas Physics
   function render() {
-    // Cursor Physics
-    dPos.x += (mouse.x - dPos.x) * 0.35;
-    dPos.y += (mouse.y - dPos.y) * 0.35;
-    rPos.x += (mouse.x - rPos.x) * 0.15;
-    rPos.y += (mouse.y - rPos.y) * 0.15;
+    rPos.x += (mouse.x - rPos.x) * 0.7;
+    rPos.y += (mouse.y - rPos.y) * 0.7;
     
-    dot.style.transform  = `translate3d(${dPos.x}px,${dPos.y}px,0) translate(-50%,-50%)`;
-    ring.style.transform = `translate3d(${rPos.x}px,${rPos.y}px,0) translate(-50%,-50%)`;
+    ring.style.transform = `translate3d(${rPos.x}px,${rPos.y}px,0)`;
 
-    // Canvas Parallax Physics (Smooth Easing)
     canvasX += (tgtCanvasX - canvasX) * 0.08;
     canvasY += (tgtCanvasY - canvasY) * 0.08;
     
@@ -876,7 +867,7 @@ function triggerHeroAnimations() {
         const lbl = document.getElementById('cursor-label');
         if (ring && lbl) {
           ring.classList.add('dragging');
-          lbl.textContent = 'MOVE';
+          lbl.textContent = 'You';
         }
       }
     }
@@ -913,7 +904,7 @@ function triggerHeroAnimations() {
       const lbl = document.getElementById('cursor-label');
       if (ring && lbl) {
         ring.classList.remove('dragging');
-        lbl.textContent = '';
+        lbl.textContent = 'You';
       }
     }
 
@@ -962,7 +953,7 @@ function triggerHeroAnimations() {
     const lbl = document.getElementById('cursor-label');
     if (ring && lbl) {
       ring.classList.add('dragging');
-      lbl.textContent = 'DRAG';
+      lbl.textContent = 'You';
     }
 
     startX = e.pageX - viewport.offsetLeft;
@@ -980,7 +971,7 @@ function triggerHeroAnimations() {
     const lbl = document.getElementById('cursor-label');
     if (ring && lbl && ring.classList.contains('dragging')) {
       ring.classList.remove('dragging');
-      lbl.textContent = '';
+      lbl.textContent = 'You';
     }
   });
 
@@ -992,7 +983,7 @@ function triggerHeroAnimations() {
     const lbl = document.getElementById('cursor-label');
     if (ring && lbl) {
       ring.classList.remove('dragging');
-      lbl.textContent = '';
+      lbl.textContent = 'You';
     }
   });
 
