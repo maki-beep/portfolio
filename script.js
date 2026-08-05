@@ -146,31 +146,22 @@ function startPreloader() {
 
 
 /* ══════════════════════════════════════
-   2. HERO ANIMATIONS (Figma Typing Engine)
+   2. CINEMATIC HERO TIMELINE (GSAP + Typing Engine)
 ══════════════════════════════════════ */
 function triggerHeroAnimations() {
-  // Grab whichever title exists on the current page
   const titleEl = document.getElementById('hero-title-type') || 
                   document.getElementById('gd-project-title') || 
                   document.getElementById('sys-project-title');
 
   if (PREFERS_REDUCED_MOTION) {
     document.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'));
-    if (titleEl && titleEl.dataset.text) {
-      titleEl.innerHTML = titleEl.dataset.text;
-    }
+    if (titleEl && titleEl.dataset.text) titleEl.innerHTML = titleEl.dataset.text;
     return;
   }
 
-  // Trigger standard reveals
-  document.querySelectorAll('.reveal').forEach((el, i) => {
-    setTimeout(() => el.classList.add('visible'), 50 + i * 150);
-  });
-
-  // Reusable function to handle typing logic based on data-text
+  // Reusable typing engine (modified to fire instantly when called by GSAP)
   function typeTarget(el, speed = 50) {
     if (!el || !el.dataset.text) return; 
-    
     const fullText = el.dataset.text;
     let idx = 0;
     let isTag = false;
@@ -183,16 +174,55 @@ function triggerHeroAnimations() {
       idx++;
       el.innerHTML = fullText.slice(0, idx);
       
-      if (idx < fullText.length) {
-        setTimeout(type, isTag ? 0 : speed);
-      }
+      if (idx < fullText.length) setTimeout(type, isTag ? 0 : speed);
     }
-    
-    setTimeout(type, 400);
+    type(); // Start immediately
   }
 
-  // Execute typing 
-  typeTarget(titleEl, 50);
+  // Check if we are on the main page with the Hero section AND GSAP is loaded
+  const figmaBox = document.querySelector('.hero-left .figma-edit-box');
+  
+  if (figmaBox && typeof gsap !== 'undefined') {
+    // 1. Hand control from CSS to GSAP by removing the 'reveal' class
+    document.querySelectorAll('.hero .reveal').forEach(el => el.classList.remove('reveal'));
+
+    // Select all the individual parts for choreography
+    const figmaUI = document.querySelectorAll('.hero-left .f-anchor, .hero-left .f-label-top, .hero-left .f-label-bottom');
+    const portrait = document.querySelector('.hero-right .portrait-card');
+    const subtitle = document.querySelector('.hero-subtitle-wrap');
+    const buttons = document.querySelectorAll('.hero-btns a');
+    const stats = document.querySelectorAll('.hero-stat');
+
+    // 2. Set Initial Hidden States
+    gsap.set(figmaBox, { opacity: 0, scale: 0.98, y: 20 });
+    gsap.set(figmaUI, { opacity: 0, scale: 0 }); // Shrink anchors and labels
+    gsap.set(portrait, { opacity: 0, x: 50, filter: "blur(12px)" }); // Push right and blur
+    gsap.set([subtitle, buttons, stats], { opacity: 0, y: 20 });
+
+    // 3. Build the Master Sequence Timeline
+    const tl = gsap.timeline({ delay: 0.2 });
+
+    tl.to(figmaBox, { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "power3.out" })
+      // Pop the Figma UI anchors and labels into place
+      .to(figmaUI, { opacity: 1, scale: 1, duration: 0.4, stagger: 0.05, ease: "back.out(2.5)" }, "-=0.3")
+      // Fire the custom typing effect
+      .call(() => typeTarget(titleEl, 35))
+      // Wait for the typing to make progress, then slide the portrait in from the side
+      .to(portrait, { opacity: 1, x: 0, filter: "blur(0px)", duration: 1.2, ease: "power4.out" }, "+=0.2")
+      // Cascade the remaining text and buttons seamlessly
+      .to(subtitle, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, "-=0.9")
+      .to(buttons, { opacity: 1, y: 0, duration: 0.5, stagger: 0.1, ease: "power2.out" }, "-=0.7")
+      .to(stats, { opacity: 1, y: 0, duration: 0.5, stagger: 0.1, ease: "power2.out" }, "-=0.6");
+
+  } else {
+    // Fallback for inner pages (like the project pages) or if GSAP fails
+    typeTarget(titleEl, 50);
+  }
+
+  // Fire any remaining standard CSS reveals on the page (like the About/Project headers)
+  document.querySelectorAll('.reveal').forEach((el, i) => {
+    setTimeout(() => el.classList.add('visible'), 50 + i * 150);
+  });
 }
 
 /* ══════════════════════════════════════
@@ -1000,4 +1030,138 @@ function triggerHeroAnimations() {
     viewport.scrollLeft = scrollLeft - walkX;
     viewport.scrollTop = scrollTop - walkY;
   });
+})();
+
+/* ══════════════════════════════════════
+   21. GSAP BENTO GRID CASCADE
+══════════════════════════════════════ */
+(function BentoGSAPStagger() {
+  // Abort if GSAP isn't loaded or user prefers reduced motion
+  if (PREFERS_REDUCED_MOTION || typeof gsap === 'undefined') return;
+
+  const grid = document.getElementById('bento-grid');
+  const cards = document.querySelectorAll('.bento-card');
+  if (!grid || cards.length === 0) return;
+
+  // 1. Remove the old CSS '.reveal' class from these specific cards to prevent conflicts
+  cards.forEach(card => card.classList.remove('reveal'));
+
+  // 2. Set the initial GSAP state (hidden, pushed down, slightly shrunk)
+  gsap.set(cards, { opacity: 0, y: 80, scale: 0.95 });
+
+  // 3. Create a dedicated observer to trigger the GSAP timeline
+  const bentoObserver = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+      
+      // Fire the cascade!
+      gsap.to(cards, {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: 0.8,
+        stagger: 0.1,          // 0.1s delay between each card firing
+        ease: "back.out(1.5)", // Creates the mechanical 'pop' / overshoot effect
+        onComplete: () => {
+          // Clean up the inline GSAP styles after the animation finishes 
+          // so your 3D mouse hover tilt effects continue to work perfectly!
+          gsap.set(cards, { clearProps: "transform,opacity" });
+        }
+      });
+      
+      // Stop observing once the animation has triggered
+      bentoObserver.disconnect();
+    }
+  }, { threshold: 0.15 }); // Triggers when 15% of the grid enters the viewport
+
+  bentoObserver.observe(grid);
+})();
+
+/* ══════════════════════════════════════
+   22. GSAP SCROLL ANIMATIONS (Projects to Footer)
+══════════════════════════════════════ */
+(function ScrollAnimationsGSAP() {
+  if (PREFERS_REDUCED_MOTION || typeof gsap === 'undefined') return;
+
+  // Reusable observer helper to fire GSAP tweens when elements enter viewport
+  function createScrollObserver(targetSelector, animateFunc, options = { threshold: 0.15 }) {
+    const elements = document.querySelectorAll(targetSelector);
+    if (!elements.length) return;
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          animateFunc(entry.target);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, options);
+
+    elements.forEach(el => {
+      // Strips old static CSS reveal class to give GSAP 100% smooth control
+      el.classList.remove('reveal');
+      observer.observe(el);
+    });
+  }
+
+  // 1. IT Project Cards (Info slides from left, Code Window from right)
+  createScrollObserver('.it-project', (project) => {
+    const info = project.querySelector('.it-info');
+    const codeWin = project.querySelector('.code-window');
+
+    gsap.set([info, codeWin], { opacity: 0 });
+    
+    const tl = gsap.timeline();
+    tl.fromTo(info, 
+      { opacity: 0, x: -40, y: 20 }, 
+      { opacity: 1, x: 0, y: 0, duration: 0.8, ease: "power3.out" }
+    )
+    .fromTo(codeWin, 
+      { opacity: 0, x: 40, scale: 0.96 }, 
+      { opacity: 1, x: 0, scale: 1, duration: 0.8, ease: "power3.out" }, 
+      "-=0.6"
+    );
+  }, { threshold: 0.2 });
+
+  // 2. Graphic Design Cards (Staggered Spring Entrance)
+  createScrollObserver('.gd-grid', (grid) => {
+    const cards = grid.querySelectorAll('.gd-card');
+    gsap.fromTo(cards, 
+      { opacity: 0, y: 40, scale: 0.92 }, 
+      { opacity: 1, y: 0, scale: 1, duration: 0.6, stagger: 0.1, ease: "back.out(1.2)" }
+    );
+  });
+
+  // 3. Visual Gallery Items (Workspace Grid Stagger)
+  createScrollObserver('#gallery-viewport', (viewport) => {
+    const items = viewport.querySelectorAll('.g-item');
+    gsap.fromTo(items, 
+      { opacity: 0, y: 40, scale: 0.92 }, 
+      { opacity: 1, y: 0, scale: 1, duration: 0.6, stagger: 0.05, ease: "power2.out" }
+    );
+  }, { threshold: 0.1 });
+
+  // 4. Contact Card & Cascading Form Fields
+  createScrollObserver('.contact-card', (card) => {
+    const header = card.querySelector('.contact-header');
+    const fields = card.querySelectorAll('.form-field');
+    const submitBtn = card.querySelector('.btn-submit');
+
+    gsap.set(card, { opacity: 0, y: 50, scale: 0.98 });
+    gsap.set([header, ...fields, submitBtn], { opacity: 0, y: 20 });
+
+    const tl = gsap.timeline();
+    tl.to(card, { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "power3.out" })
+      .to(header, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, "-=0.3")
+      .to(fields, { opacity: 1, y: 0, duration: 0.4, stagger: 0.1, ease: "power2.out" }, "-=0.2")
+      .to(submitBtn, { opacity: 1, y: 0, duration: 0.4, ease: "back.out(1.5)" }, "-=0.2");
+  }, { threshold: 0.2 });
+
+  // 5. Footer Fade-In
+  createScrollObserver('#footer', (footer) => {
+    gsap.fromTo(footer, 
+      { opacity: 0, y: 30 }, 
+      { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }
+    );
+  }, { threshold: 0.1 });
+
 })();
