@@ -120,7 +120,7 @@ function startPreloader() {
     }
   });
 
-  // When the initialize button is clicked, shatter the boot screen
+  // When the initialize button is clicked, dynamically shatter the boot screen in 3D
   const bootBtn = document.getElementById('boot-continue-btn');
   if (bootBtn) {
     bootBtn.addEventListener('click', () => {
@@ -132,14 +132,39 @@ function startPreloader() {
         lbl.textContent = 'You';
       }
 
-      // Trigger exit animation
-      bootScreen.classList.add('exit');
-      
-      // Wait for the blur/scale CSS transition to finish, then start Phase 2
-      setTimeout(() => {
-        bootScreen.remove();
-        startPreloader();
-      }, 800);
+      // Abort and use CSS fallback if GSAP isn't loaded
+      if (typeof gsap === 'undefined') {
+        bootScreen.classList.add('exit');
+        setTimeout(() => { bootScreen.remove(); startPreloader(); }, 800);
+        return;
+      }
+
+      // Prepare the 3D stage
+      gsap.set(bootScreen, { perspective: 1000 });
+      const elements = bootScreen.querySelectorAll('.ar-top-text, .figma-edit-box, .ar-subtitle, .ar-btn');
+      const grid = bootScreen.querySelector('.boot-overlay-grid');
+
+      // Execute the Shatter Sequence
+      const tl = gsap.timeline({
+        onComplete: () => {
+          bootScreen.remove();
+          startPreloader();
+        }
+      });
+
+      tl.to(elements, {
+        opacity: 0,
+        z: 300, // Push elements aggressively toward the camera
+        scale: 1.5,
+        y: () => (Math.random() - 0.5) * 300, // Randomly scatter Y
+        x: () => (Math.random() - 0.5) * 300, // Randomly scatter X
+        rotationZ: () => (Math.random() - 0.5) * 45, // Random spin
+        duration: 0.7,
+        stagger: 0.05,
+        ease: "power4.in"
+      }, 0)
+      .to(grid, { opacity: 0, scale: 2.5, duration: 0.7, ease: "power3.in" }, 0)
+      .to(bootScreen, { backgroundColor: "transparent", duration: 0.4 }, 0.4);
     });
   }
 })();
@@ -477,22 +502,47 @@ function triggerHeroAnimations() {
 
 
 /* ══════════════════════════════════════
-   9. GLOBAL TILT ANIMATION FOR ALL CARDS
+   9. GSAP 3D TILT ANIMATION FOR ALL CARDS
 ══════════════════════════════════════ */
-(function Tilt() {
-  if (PREFERS_REDUCED_MOTION) return;
+(function TiltGSAP() {
+  if (PREFERS_REDUCED_MOTION || typeof gsap === 'undefined') return;
 
   const cards = document.querySelectorAll('.tilt-card');
 
   cards.forEach(card => {
-    card.addEventListener('mousemove', e => {
-      const r  = card.getBoundingClientRect();
-      const rx = ((e.clientY - r.top  - r.height / 2) / (r.height / 2)) * -10;
-      const ry = ((e.clientX - r.left - r.width  / 2) / (r.width  / 2)) *  10;
-      card.style.transform = `perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg) scale3d(1.02,1.02,1.02)`;
+    // 1. Prevent CSS transitions from fighting GSAP's 60fps updates
+    card.style.transitionProperty = "box-shadow, border-color, filter, background";
+
+    // 2. Create high-performance trackers using strict GSAP properties (rotationX/Y)
+    const xTo = gsap.quickTo(card, "rotationY", { duration: 0.5, ease: "power3.out" });
+    const yTo = gsap.quickTo(card, "rotationX", { duration: 0.5, ease: "power3.out" });
+    const yMove = gsap.quickTo(card, "y", { duration: 0.5, ease: "power3.out" });
+    const scaleTo = gsap.quickTo(card, "scale", { duration: 0.5, ease: "back.out(1.5)" });
+
+    card.addEventListener('mouseenter', () => {
+      // Enforce 3D perspective every time you hover, ensuring scroll animations don't clear it
+      gsap.set(card, { transformPerspective: 1000, transformStyle: "preserve-3d", transformOrigin: "center center" });
+      
+      yMove(-8); // Replicates the card lift
+      scaleTo(1.02); // Replicates the card expansion
     });
+
+    card.addEventListener('mousemove', e => {
+      const rect = card.getBoundingClientRect();
+      // Calculate normalized mouse position (-1 to 1)
+      const xPos = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      const yPos = ((e.clientY - rect.top) / rect.height) * 2 - 1;
+      
+      xTo(xPos * 10);
+      yTo(yPos * -10); // Inverted so the card tilts 'toward' the mouse
+    });
+
     card.addEventListener('mouseleave', () => {
-      card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1,1,1)';
+      // Smoothly glide all properties back to resting state
+      xTo(0);
+      yTo(0);
+      yMove(0); 
+      scaleTo(1);
     });
   });
 
@@ -502,20 +552,30 @@ function triggerHeroAnimations() {
 
 
 /* ══════════════════════════════════════
-   10. MAGNETIC BUTTONS
+   10. GSAP MAGNETIC BUTTONS (Elastic Physics)
 ══════════════════════════════════════ */
-(function Magnetic() {
-  if (PREFERS_REDUCED_MOTION) return;
+(function MagneticGSAP() {
+  if (PREFERS_REDUCED_MOTION || typeof gsap === 'undefined') return;
 
   document.querySelectorAll('.magnetic').forEach(btn => {
+    // gsap.quickTo is highly optimized for tying animations directly to mouse movement
+    const xTo = gsap.quickTo(btn, "x", { duration: 1, ease: "elastic.out(1, 0.3)" });
+    const yTo = gsap.quickTo(btn, "y", { duration: 1, ease: "elastic.out(1, 0.3)" });
+
     btn.addEventListener('mousemove', e => {
-      const r = btn.getBoundingClientRect();
-      const x = (e.clientX - r.left - r.width  / 2) * 0.3;
-      const y = (e.clientY - r.top  - r.height / 2) * 0.3;
-      btn.style.transform = `translate(${x}px,${y}px)`;
+      const rect = btn.getBoundingClientRect();
+      // Calculate distance from the center of the button
+      const x = (e.clientX - rect.left - rect.width / 2) * 0.4;
+      const y = (e.clientY - rect.top - rect.height / 2) * 0.4;
+      
+      xTo(x);
+      yTo(y);
     });
+
     btn.addEventListener('mouseleave', () => {
-      btn.style.transform = 'translate(0,0)';
+      // Snaps the button back to origin with a satisfying elastic bounce
+      xTo(0);
+      yTo(0);
     });
   });
 })();
@@ -693,14 +753,30 @@ function triggerHeroAnimations() {
       btn.classList.add('active');
 
       // Animate out the current tab, then animate in the new one
-      if (currentActive) {
-        currentActive.classList.add('fade-out');
-        
-        setTimeout(() => {
-          currentActive.classList.remove('active', 'fade-out');
-          if (nextActive) nextActive.classList.add('active');
-        }, 300); // Matches the CSS exit animation duration
-      } else {
+      // Animate out the current tab, then animate in the new one (GSAP Blur & Slide)
+      if (currentActive && typeof gsap !== 'undefined') {
+        gsap.to(currentActive, {
+          opacity: 0,
+          y: 15,
+          filter: "blur(8px)",
+          duration: 0.3,
+          ease: "power2.in",
+          onComplete: () => {
+            currentActive.classList.remove('active');
+            currentActive.style.cssText = ""; // Clear inline styles
+            
+            if (nextActive) {
+              nextActive.classList.add('active');
+              gsap.fromTo(nextActive, 
+                { opacity: 0, y: -15, filter: "blur(8px)" },
+                { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.4, ease: "power2.out" }
+              );
+            }
+          }
+        });
+      } else if (currentActive) {
+        // Fallback if GSAP fails to load
+        currentActive.classList.remove('active');
         if (nextActive) nextActive.classList.add('active');
       }
     });
@@ -715,29 +791,58 @@ function triggerHeroAnimations() {
     if (!btn || !console_) return;
 
     btn.addEventListener('click', () => {
-      if (running) return;
+      if (running || typeof gsap === 'undefined') return;
       running = true;
-      btn.innerHTML = '<i class="bx bx-loader-alt spin"></i> ...';
-      console_.innerHTML = '<span class="console-placeholder">> Executing script...</span>';
 
-      // 1. Simulate the script running
-      setTimeout(() => {
-        console_.innerHTML = `<span class="console-output">${output}\n<span style="color: #00e5ff;">> [SYS] Redirecting to project documentation...</span></span>`;
-        btn.innerHTML = '<i class="bx bx-link-external"></i> DOCS';
-        
-        // 2. Redirect to the system project page after a short delay
-        setTimeout(() => {
-          // Navigates to the new system page
-          window.location.href = 'system-project.html';
+      // Extract the lines from your HTML data-output attribute
+      const lines = output.split('\n');
+      console_.innerHTML = ''; 
+      btn.innerHTML = '<i class="bx bx-loader-alt spin"></i> ...';
+
+      // Build the execution timeline
+      const tl = gsap.timeline({
+        onComplete: () => {
+          btn.innerHTML = '<i class="bx bx-link-external"></i> DOCS';
           
-          // Reset the button state in case the user clicks the browser 'Back' button
-          setTimeout(() => {
-            btn.innerHTML = '<i class="bx bx-play"></i> RUN';
-            running = false;
-            console_.innerHTML = '<span class="console-placeholder">> Status: Ready to execute. Click Run.</span>';
-          }, 1000);
-        }, 900);
-      }, 650);
+          gsap.delayedCall(0.8, () => {
+            window.location.href = 'system-project.html'; 
+            
+            // Background reset in case the user hits the "Back" button on their browser
+            gsap.delayedCall(1, () => {
+              btn.innerHTML = '<i class="bx bx-play"></i> RUN';
+              console_.innerHTML = '<span class="console-placeholder">> Status: Ready to execute. Click Run for Arch.</span>';
+              running = false;
+            });
+          });
+        }
+      });
+
+      // Stagger the lines appearing one by one
+      lines.forEach((line, index) => {
+        tl.add(() => {
+          const div = document.createElement('div');
+          div.className = 'console-output';
+          div.style.opacity = '0';
+          div.textContent = line;
+          console_.appendChild(div);
+          
+          gsap.to(div, { opacity: 1, duration: 0.2, ease: "none" });
+        }, index * 0.35); // 0.35s delay between each line logging
+      });
+
+      // Add the final cyan redirect notification
+      tl.add(() => {
+        const redirect = document.createElement('div');
+        redirect.innerHTML = '<br/><span style="color: #00e5ff;">> [SYS] Redirecting to project documentation...</span>';
+        redirect.style.opacity = '0';
+        console_.appendChild(redirect);
+        
+        // Pop the final message up slightly
+        gsap.fromTo(redirect, 
+          { opacity: 0, y: 5 }, 
+          { opacity: 1, y: 0, duration: 0.4, ease: "back.out(2)" }
+        );
+      }, "+=0.3");
     });
   });
 
@@ -1064,7 +1169,7 @@ function triggerHeroAnimations() {
         onComplete: () => {
           // Clean up the inline GSAP styles after the animation finishes 
           // so your 3D mouse hover tilt effects continue to work perfectly!
-          gsap.set(cards, { clearProps: "transform,opacity" });
+          gsap.set(cards, { clearProps: "opacity" });
         }
       });
       
@@ -1165,3 +1270,132 @@ function triggerHeroAnimations() {
   }, { threshold: 0.1 });
 
 })();
+
+/* ══════════════════════════════════════
+   21. GSAP SCROLL-VELOCITY MARQUEE
+══════════════════════════════════════ */
+(function MarqueeVelocityGSAP() {
+  if (PREFERS_REDUCED_MOTION || typeof gsap === 'undefined') return;
+
+  const tracks = document.querySelectorAll('.marquee-track');
+  if (!tracks.length) return;
+
+  tracks.forEach(track => {
+    // 1. Disable the static CSS animation so GSAP can take the wheel
+    track.style.animation = "none";
+
+    // 2. Create the seamless GSAP infinite loop
+    let marqueeTween = gsap.to(track, {
+      xPercent: -50,
+      repeat: -1,
+      duration: 15,
+      ease: "linear"
+    }).totalProgress(0.5); // Start halfway so it's already populated
+
+    // 3. Add scroll velocity physics
+    let lastScroll = window.scrollY;
+    let isScrollingDown = true;
+    let scrollTimeout;
+
+    window.addEventListener("scroll", () => {
+      let currentScroll = window.scrollY;
+      isScrollingDown = currentScroll > lastScroll;
+      lastScroll = currentScroll;
+
+      // Instantly speed up the marquee (3x speed) based on scroll direction
+      gsap.to(marqueeTween, {
+        timeScale: isScrollingDown ? 3 : -3, 
+        duration: 0.25,
+        ease: "power1.in"
+      });
+
+      // Clear the previous timeout
+      clearTimeout(scrollTimeout);
+      
+      // When the user stops scrolling, smoothly settle back to normal speed (1 or -1)
+      scrollTimeout = setTimeout(() => {
+        gsap.to(marqueeTween, {
+          timeScale: isScrollingDown ? 1 : -1,
+          duration: 0.8,
+          ease: "power3.out"
+        });
+      }, 150);
+    });
+  });
+})();
+
+/* ══════════════════════════════════════
+   23. GSAP STACK CARD HOVER STAGGER
+══════════════════════════════════════ */
+(function StackHoverGSAP() {
+  if (PREFERS_REDUCED_MOTION || typeof gsap === 'undefined') return;
+
+  const stackCard = document.querySelector('.stack-card');
+  if (!stackCard) return;
+
+  const tools = stackCard.querySelectorAll('.tool-item');
+
+  stackCard.addEventListener('mouseenter', () => {
+    // 1. Kill any ongoing bounce animations so it doesn't glitch if you hover rapidly
+    gsap.killTweensOf(tools);
+    
+    // 2. Fire the cascade bounce
+    gsap.fromTo(tools, 
+      { y: 0, scale: 1 }, 
+      { 
+        y: -12,             // Jumps up 12 pixels
+        scale: 1.05,        // Expands slightly 
+        duration: 0.25,     // Fast, snappy jump
+        stagger: 0.08,      // 0.08 seconds between each icon jumping
+        ease: "power2.out", 
+        yoyo: true,         // Tells GSAP to reverse the animation automatically
+        repeat: 1           // Do the yoyo once (jump up, then back down)
+      }
+    );
+  });
+})();
+
+/* ══════════════════════════════════════
+   24. GSAP ORGANIC 3D ARCHITECTURE FLOAT
+══════════════════════════════════════ */
+(function ArchFloatGSAP() {
+  if (PREFERS_REDUCED_MOTION || typeof gsap === 'undefined') return;
+
+  // Select the 3 floating layers in the System Arch card
+  const topLayer = document.querySelector('.layer-top');
+  const midLayer = document.querySelector('.layer-mid');
+  const botLayer = document.querySelector('.layer-bot');
+
+  if (!topLayer || !midLayer || !botLayer) return;
+
+  // Animate their Z-axis continuously using sine waves so they drift out of sync
+  gsap.to(topLayer, { z: "+=15", duration: 2.5, yoyo: true, repeat: -1, ease: "sine.inOut" });
+  gsap.to(midLayer, { z: "+=10", duration: 3.2, yoyo: true, repeat: -1, ease: "sine.inOut" });
+  gsap.to(botLayer, { z: "-=8",  duration: 2.8, yoyo: true, repeat: -1, ease: "sine.inOut" });
+})();
+
+
+/* ══════════════════════════════════════
+   25. GSAP HARDWARE SCROLL GEARS
+══════════════════════════════════════ */
+(function ScrollGearsGSAP() {
+  if (PREFERS_REDUCED_MOTION || typeof gsap === 'undefined') return;
+
+  // Target the hardware icons inside the section dividers
+  const icons = document.querySelectorAll('.divider-icon i');
+  if (!icons.length) return;
+
+  // Spin the icons based on how far down the page the user has scrolled
+  window.addEventListener('scroll', () => {
+    const scrollY = window.scrollY;
+    
+    gsap.to(icons, {
+      rotation: scrollY * 0.2, // Adjust multiplier to change spin speed
+      duration: 0.5,
+      ease: "power2.out",
+      overwrite: "auto" // Prevents animation stuttering during fast scrolling
+    });
+  });
+})();
+
+
